@@ -8,7 +8,9 @@ def parse_file(filename):
     """
     Parse file reads the relevant TSP .txt files and returns a numpy array representing the graph of cities
     """
-    pass
+    with open(filename) as f:
+        for line in f:
+            print (line.split()[:3])
 
 def save_population(filename, population):
     """

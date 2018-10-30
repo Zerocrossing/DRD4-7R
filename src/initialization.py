@@ -35,7 +35,6 @@ class Initialization:
         Calls whichever method is currently selected
         """
         population = self.method(self.str_len, self.pop_size)
-        fitness = np.zeros(self.pop_size)
         return population
 
     ##### INITIALIZATION METHODS #####

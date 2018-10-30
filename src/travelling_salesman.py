@@ -8,7 +8,7 @@ Anything with "DEMO" in it's name is obviously not a proper implementation and w
 """
 
 import numpy as np
-import src.file_utils
+import src.file_utils as files
 from src.initialization import Initialization
 from src.utils import debug_print as print, set_debug
 
@@ -25,18 +25,20 @@ def DEMO_FUNCTIONALITY():
     """
     init = Initialization(POP_SIZE, STR_LENGTH, INIT_METHOD)
     population = init.initialize()
-    print(population.shape)
     print(population)
+    files.parse_file("../data/TSP_WesternSahara_29.txt")
 
 def DEMO_DEBUG_PRINTING():
+    """
+    Provided in initial commit to demo debug printing
+    """
     print("Demonstration of debug print functionality. The debug flag will be toggled off")
     set_debug(False)
     print("This line should not print")
-    set_debug(True)
+    set_debug(DEBUG)
 
 
 if __name__ == '__main__':
     set_debug(DEBUG)
     DEMO_FUNCTIONALITY()
     # DEMO_DEBUG_PRINTING()
-
