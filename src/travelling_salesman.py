@@ -25,8 +25,11 @@ def DEMO_FUNCTIONALITY():
     """
     init = Initialization(POP_SIZE, STR_LENGTH, INIT_METHOD)
     population = init.initialize()
-    print(population)
-    files.parse_file("../data/TSP_WesternSahara_29.txt")
+    print("Sample first 3 elements of the population:\n", population[:3])
+    distances = files.parse_file("../data/TSP_WesternSahara_29.txt")
+    print("Sample first 3 distances:\n")
+    print(distances[:3])
+
 
 def DEMO_DEBUG_PRINTING():
     """
