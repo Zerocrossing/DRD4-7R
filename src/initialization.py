@@ -21,25 +21,25 @@ class Initialization:
         :param method_str:
         :return:
         """
-        if method_str.lower() == "random":
-            self.method = self.random
-            print("Random method selected for Initialization")
+        if method_str.lower() == "random_permutations":
+            self.method = self.random_permutations
+            print("Random permutations method selected for initialization")
         elif method_str.lower() == "demo_random":
             self.method = self.DEMO_random
-            print("DEMO_Random method selected for Initialization")
+            print("DEMO_Random method selected for initialization")
         else:
-            raise Exception("Incorrect method selected for Initialization")
+            raise Exception("Incorrect method selected for initialization")
 
     def initialize(self):
         """
         Calls whichever method is currently selected
         """
-        population = self.method(self.str_len, self.pop_size)
+        population = self.method(self.pop_size, self.str_len)
         return population
 
     ##### INITIALIZATION METHODS #####
 
-    def DEMO_random(self, str_len=None, pop_size=None):
+    def DEMO_random(self, pop_size=None, str_len=None):
         """
         randomized candidate solutions
         :return:
@@ -48,9 +48,10 @@ class Initialization:
         if pop_size is None: pop_size = self.pop_size
         return np.random.randint(1, 50, (pop_size, str_len))
 
-    def random(self, str_len=None, pop_size=None):
+    def random_permutations(self, pop_size=None, str_len=None):
         """
-        randomized candidate solutions
-        :return:
+        randomized permutation candidate solutions
         """
-        pass
+        if pop_size == None: pop_size = self.pop_size
+        if str_len == None: str_len = self.str_len
+        return np.array([np.random.permutation(np.arange(0, str_len)) for n in np.arange(pop_size)])
