@@ -17,18 +17,20 @@ from src.survivor_selection import Survivor_Selection
 import src.file_utils as files
 from src.utils import *
 from src.utils import debug_print as print
+from src.preprocessing import get_secret_stuff
+from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 500
+POP_SIZE = 20
 STR_LENGTH = 10
-NUM_PARENTS = 250
-NUM_GENERATIONS = 500
+NUM_PARENTS = 10
+NUM_GENERATIONS = 50
 MUTATION_RATE = .2
 INIT_METHOD = "random_permutations"
 SELECT_METHOD = "random"
 CROSSOVER_METHOD = "cut_and_crossfill"
 MUTATION_METHOD = "swap"
-EVALUATION_METHOD = "DEMO_IN_ORDER"
+EVALUATION_METHOD = "use secret stuff"
 SURVIVOR_METHOD = "mu_plus_lambda"
 DEBUG = True
 
@@ -42,15 +44,25 @@ def DEMO_FUNCTIONALITY():
     """
     # Initialize modules
     start_timer("setup")
+    big_data = "../data/TSP_Canada_4663.txt"
+    middle_data = "../data/TSP_Uruguay_734.txt"
+    small_data = "../data/TSP_WesternSahara_29.txt"
+
+    actual_data = parse(middle_data)
+
+    STR_LENGTH = len(actual_data)
+
     initializer = Initialization(POP_SIZE, STR_LENGTH, INIT_METHOD)
     parent_selector = Parent_Selection(POP_SIZE, STR_LENGTH, SELECT_METHOD)
     recombinator = Recombination(POP_SIZE, STR_LENGTH, CROSSOVER_METHOD)
     mutator = Mutation(str_length=STR_LENGTH, mutation_rate=MUTATION_RATE, method_str=MUTATION_METHOD)
-    evaluator = Evaluation(graph=None, method_str=EVALUATION_METHOD)
+    evaluator = Evaluation(graph=None, method_str=EVALUATION_METHOD, data=actual_data)
     survivor_selector = Survivor_Selection(POP_SIZE, STR_LENGTH, SURVIVOR_METHOD)
+
     # Initialize Population
     population = initializer.initialize()
     fitness = evaluator.evaluate(population)
+
     population, mutation_index = mutator.mutate(population)
     end_timer("setup")
 
@@ -69,6 +81,7 @@ def DEMO_FUNCTIONALITY():
         # re-evaluate children and population
         child_fitness = evaluator.evaluate(children)
         fitness = evaluator.evaluate(population)
+        #print(fitness)
         # select from parents and children to form new population
         population, fitness = survivor_selector.select(population, fitness, children, child_fitness)
         # print debugs every 10%
