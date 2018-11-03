@@ -5,6 +5,7 @@ Current methods include:
 """
 
 import numpy as np
+from src.utils import *
 from src.utils import debug_print as print, set_debug
 
 
@@ -34,7 +35,9 @@ class Initialization:
         """
         Calls whichever method is currently selected
         """
+        start_timer("initialization")
         population = self.method(self.pop_size, self.str_len)
+        add_timer("initialization")
         return population
 
     ##### INITIALIZATION METHODS #####

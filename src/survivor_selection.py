@@ -2,6 +2,7 @@
 Selecting a specific number of members from a population to continue to the next generation
 """
 import numpy as np
+from src.utils import *
 
 
 class Survivor_Selection:
@@ -26,7 +27,10 @@ class Survivor_Selection:
             raise Exception("Incorrect method selected for survivor selection")
 
     def select(self, population, population_fitness, children, children_fitness):
-        return self.method(population, population_fitness, children, children_fitness)
+        start_timer("survivor selection")
+        new_population, new_fitness = self.method(population, population_fitness, children, children_fitness)
+        add_timer("survivor selection")
+        return new_population, new_fitness
 
     def random(self, population, population_fitness, children, children_fitness):
         combo_pop = np.append(population, children, axis=0)

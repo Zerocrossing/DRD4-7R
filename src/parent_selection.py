@@ -3,6 +3,7 @@ Selecting parents for sexual (non-unary) reproduction
 """
 
 import numpy as np
+from src.utils import *
 
 
 class Parent_Selection:
@@ -21,10 +22,13 @@ class Parent_Selection:
             self.method = self.random
             print("Random method selected for parent selection")
         else:
-            raise Exception("Incorrect method selected for Recombination")
+            raise Exception("Incorrect method selected for parent selection")
 
     def select(self, population, num_parents):
-        return self.method(population, num_parents)
+        start_timer("parent selection")
+        selected = self.method(population, num_parents)
+        add_timer("parent selection")
+        return selected
 
     def random(self, population, num_parents):
         return np.random.choice(self.pop_size, num_parents, replace=False)

@@ -3,6 +3,7 @@ Introducing small amounts of randomness to the population
 """
 
 import numpy as np
+from src.utils import *
 
 #TODO: Need to modify to accept fitness
 
@@ -25,10 +26,12 @@ class Mutation:
             raise Exception("Incorrect method selected for mutation")
 
     def mutate(self, population):
+        start_timer("mutation")
         selection = np.random.random_sample(population.shape[0]) < self.rate
         selection = np.argwhere(selection).flatten()
         if selection.size == 0: return population, []
         population[selection] = self.method(population[selection])
+        add_timer("mutation")
         return population, selection
 
     # todo: there has to be a numpy-esque way to do this

@@ -2,6 +2,7 @@
 Evaluation heuristics
 """
 import numpy as np
+from src.utils import *
 
 
 class Evaluation:
@@ -26,7 +27,10 @@ class Evaluation:
             raise Exception("Incorrect method selected for evaluation")
 
     def evaluate(self, population):
-        return self.method(population)
+        start_timer("evaluation")
+        eval = self.method(population)
+        add_timer("evaluation")
+        return eval
 
     def euclidean(population):
         """
