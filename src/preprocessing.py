@@ -4,14 +4,11 @@ import numpy as np
 def euclidean(a,b):
     """
     Returns the euclidean distance between two points
-    :param a:
-    :param b:
-    :return:
     """
     return np.linalg.norm(a-b)
 
 # Need to numpy the hell out of this
-def get_secret_stuff(data):
+def precalculate_distances(data):
     """
     Top Secret Data!
     :param data:

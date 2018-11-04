@@ -3,7 +3,7 @@ Evaluation heuristics
 """
 import numpy as np
 from src.utils import *
-from src.preprocessing import get_secret_stuff
+from src.preprocessing import precalculate_distances
 
 
 class Evaluation:
@@ -11,7 +11,7 @@ class Evaluation:
     def __init__(self, tsp_instance, method_str):
         self.tsp = tsp_instance
         self.set_method(method_str)
-        self.data = get_secret_stuff(tsp_instance.graph)
+        self.data = precalculate_distances(tsp_instance.graph)
 
     def set_method(self, method_str):
         """
@@ -19,12 +19,9 @@ class Evaluation:
         :param method_str:
         :return:
         """
-        if method_str.lower() == "use_secret_stuff":
+        if method_str.lower() == "precalculate_distances":
             self.method = self.use_preprocessed_array
             print("Euclidean distance method selected for evaluation")
-        elif method_str.lower() == "demo_in_order":
-            self.method = self.DEMO_IN_ORDER
-            print("In order method selected for evaluation")
         else:
             raise Exception("Incorrect method selected for evaluation")
     # todo incorporate mutation masking to save time (only calculate fitness for individuals we mutated)

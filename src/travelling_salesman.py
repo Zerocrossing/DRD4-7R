@@ -31,7 +31,7 @@ SELECT_METHOD = "random"
 # CROSSOVER_METHOD = "cut_and_crossfill"
 CROSSOVER_METHOD = "order_crossover"
 MUTATION_METHOD = "swap"
-EVALUATION_METHOD = "use_secret_stuff"
+EVALUATION_METHOD = "precalculate_distances"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
@@ -100,12 +100,13 @@ def the_tsp_problem():
     print("*" * 10 + "\nFunction Times (in ms):\n")
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
-    # plot history
-    tsp.plot_history("mean_fitness")
-    tsp.plot_history("best_fitness")
+
     if PLOT:
         animator.update(tsp.population[np.argmax(tsp.fitness.max())])
 
+    # plot history
+    tsp.plot_history("mean_fitness")
+    tsp.plot_history("best_fitness")
 
 if __name__ == '__main__':
     set_debug(DEBUG)
