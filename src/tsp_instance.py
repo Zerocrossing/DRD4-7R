@@ -13,7 +13,6 @@ class TSP:
         self.string_length      = graph.shape[0]
         self.num_parents        = num_parents
         self.mutation_rate      = mutation_rate
-        self.num_generations    = num_generations
         self.history            = {}
         self.population         = np.zeros(population_size)
         self.fitness            = np.zeros(population_size)
@@ -22,6 +21,9 @@ class TSP:
         self.children_fitness   = np.zeros(num_parents)
         self.mutant_index       = np.array([])
         self.mutant_children_index = np.array([])
+        # optional variables not used by every solution
+        self.num_generations    = num_generations
+        self.current_generation = 0
 
 
     def add_history(self, string, value):
@@ -32,7 +34,13 @@ class TSP:
             self.history[string] = []
         self.history[string].append(value)
 
-    def plot(data, arr):
+    def plot_history(self, string):
+        data = self.history.get(string)
+        plt.plot(data)
+        plt.title(string)
+        plt.show()
+
+    def plot(self, data, arr):
         # plt.scatter(*zip(*data))
         x, y = zip(*data)
         for i in range(0, len(arr) - 1):

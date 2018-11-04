@@ -50,9 +50,6 @@ def plot(data, arr):
 def DEMO_FUNCTIONALITY():
     """
     Provided in initial commit to demo workflow concept
-    Begins with random permutations and evaluates fitness based on how many elements are increasing order
-    eg) 2-3-4-3 has a fitness score of 3
-    Yes, this is the worlds worst sorting algorithm.
     """
     # Initialize modules
     start_timer("setup")
@@ -75,7 +72,6 @@ def DEMO_FUNCTIONALITY():
     mutator = Mutation(tsp, method_str=MUTATION_METHOD)
     evaluator = Evaluation(tsp, method_str=EVALUATION_METHOD)
     survivor_selector = Survivor_Selection(tsp, SURVIVOR_METHOD)
-
     # Initialize Population and fitness
     initializer.initialize()
     evaluator.evaluate()
@@ -96,10 +92,11 @@ def DEMO_FUNCTIONALITY():
         # re-evaluate children and population
         evaluator.evaluate()
         evaluator.evaluate_children()
-        #print(fitness)
         # select from parents and children to form new population
         survivor_selector.select()
-        # print debugs every 10%
+        # add history and print debugs every 10%
+        tsp.add_history("mean_fitness",tsp.fitness.mean())
+        tsp.add_history("best_fitness",tsp.fitness.max())
         if not (n % (NUM_GENERATIONS // 10)):
             print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(n, tsp.fitness.mean(), tsp.fitness.max()))
 
@@ -111,7 +108,9 @@ def DEMO_FUNCTIONALITY():
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
 
-    plot(actual_data, tsp.population[np.argmax(tsp.fitness)])
+    tsp.plot_history("mean_fitness")
+    tsp.plot_history("best_fitness")
+
 
 if __name__ == '__main__':
     set_debug(DEBUG)
