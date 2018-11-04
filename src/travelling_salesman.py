@@ -94,24 +94,24 @@ def DEMO_FUNCTIONALITY():
         mutator.mutate_population()
         mutator.mutate_children()
         # re-evaluate children and population
-        evaluator.evaluate_population()
+        evaluator.evaluate()
         evaluator.evaluate_children()
         #print(fitness)
         # select from parents and children to form new population
-        population, fitness = survivor_selector.select(population, fitness, children, child_fitness)
+        survivor_selector.select()
         # print debugs every 10%
         if not (n % (NUM_GENERATIONS // 10)):
-            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(n, fitness.mean(), fitness.max()))
+            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(n, tsp.fitness.mean(), tsp.fitness.max()))
 
     # finished, print results
     print("*" * 20)
-    print("Final Mean Fitness: {}\t Best Fitness:{}".format(fitness.mean(), fitness.max()))
-    print("Best Member of Population:\n", population[np.argmax(fitness)])
+    print("Final Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
+    print("Best Member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 10 + "\nFunction Times (in ms):\n")
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
 
-    plot(actual_data, population[np.argmax(fitness)])
+    plot(actual_data, tsp.population[np.argmax(tsp.fitness)])
 
 if __name__ == '__main__':
     set_debug(DEBUG)

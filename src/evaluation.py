@@ -29,7 +29,7 @@ class Evaluation:
         else:
             raise Exception("Incorrect method selected for evaluation")
     # todo incorporate mutation masking to save time (only calculate fitness for individuals we mutated)
-    def evaluate_population(self):
+    def evaluate(self):
         start_timer("evaluation")
         fitness = self.method(self.tsp.population)
         self.tsp.fitness = fitness
