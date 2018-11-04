@@ -12,7 +12,6 @@ class Evaluation:
         self.tsp = tsp_instance
         self.set_method(method_str)
         self.data = get_secret_stuff(tsp_instance.graph)
-        print("DICT LENGTH",len(self.data))
 
     def set_method(self, method_str):
         """
@@ -58,7 +57,3 @@ class Evaluation:
                 current_distance -= self.euclidean(individual[a], individual[a+1])
             distance.append(current_distance)
         return np.array(distance)
-
-    def DEMO_IN_ORDER(self):
-        roll = np.roll(self.tsp.population, 1, axis=1)
-        self.tsp.fitness = (self.tsp.population[:,1:]> roll[:,1:] ).sum(axis=1)

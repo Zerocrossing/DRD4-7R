@@ -21,6 +21,9 @@ class Recombination:
         if method_str.lower() == "cut_and_crossfill":
             self.method = self.cut_and_crossfill
             print("Cut and crossfill method selected for recombination")
+        elif method_str.lower() == "order_crossover":
+            self.method = self.order_crossover
+            print("Order crossover method selected for recombination")
         else:
             raise Exception("Incorrect method selected for recombination")
 
@@ -56,3 +59,12 @@ class Recombination:
                 offspring2[np.nonzero(offspring2 == -1)[0][0]] = parent1[cut]
             cut = (cut + 1) % len(parent1)
         return offspring1, offspring2
+
+    def order_crossover(self, parent1, parent2):
+        half_len = parent1.size // 2
+        cut = np.random.randint(1, half_len)
+        c1 = parent1[cut:cut + half_len]
+        c1 = np.insert(parent2[~np.isin(parent2, c1)], cut, c1)
+        c2 = parent2[cut:cut + half_len]
+        c2 = np.insert(parent1[~np.isin(parent1, c2)], cut, c2)
+        return c1, c2
