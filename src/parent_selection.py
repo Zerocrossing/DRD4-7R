@@ -8,9 +8,8 @@ from src.utils import *
 
 class Parent_Selection:
 
-    def __init__(self, pop_size, str_len, method_str):
-        self.pop_size = pop_size
-        self.str_len = str_len
+    def __init__(self, tsp_instance, method_str):
+        self.tsp = tsp_instance
         self.set_method(method_str)
 
     def set_method(self, method_str):
@@ -24,11 +23,10 @@ class Parent_Selection:
         else:
             raise Exception("Incorrect method selected for parent selection")
 
-    def select(self, population, num_parents):
+    def select(self):
         start_timer("parent selection")
-        selected = self.method(population, num_parents)
+        self.tsp.parent_index = self.method()
         add_timer("parent selection")
-        return selected
 
-    def random(self, population, num_parents):
-        return np.random.choice(self.pop_size, num_parents, replace=False)
+    def random(self):
+        return np.random.choice(self.tsp.population_size, self.tsp.num_parents, replace=False)

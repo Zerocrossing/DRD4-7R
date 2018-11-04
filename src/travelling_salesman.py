@@ -8,6 +8,7 @@ Anything with "DEMO" in it's name is obviously not a proper implementation and w
 """
 
 import numpy as np
+from src.tsp_instance import TSP
 from src.initialization import Initialization
 from src.parent_selection import Parent_Selection
 from src.recombination import Recombination
@@ -58,40 +59,43 @@ def DEMO_FUNCTIONALITY():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-
     actual_data = parse(small_data)
+    # Create Instance
+    tsp = TSP(
+        graph           = actual_data,
+        population_size = POP_SIZE,
+        num_parents     = NUM_PARENTS,
+        mutation_rate   = MUTATION_RATE,
+        num_generations = NUM_GENERATIONS
+    )
+    # Initialize modules
+    initializer = Initialization(tsp, INIT_METHOD)
+    parent_selector = Parent_Selection(tsp, SELECT_METHOD)
+    recombinator = Recombination(tsp, CROSSOVER_METHOD)
+    mutator = Mutation(tsp, method_str=MUTATION_METHOD)
+    evaluator = Evaluation(tsp, method_str=EVALUATION_METHOD)
+    survivor_selector = Survivor_Selection(tsp, SURVIVOR_METHOD)
 
-    STR_LENGTH = len(actual_data)
-
-    initializer = Initialization(POP_SIZE, STR_LENGTH, INIT_METHOD)
-    parent_selector = Parent_Selection(POP_SIZE, STR_LENGTH, SELECT_METHOD)
-    recombinator = Recombination(POP_SIZE, STR_LENGTH, CROSSOVER_METHOD)
-    mutator = Mutation(str_length=STR_LENGTH, mutation_rate=MUTATION_RATE, method_str=MUTATION_METHOD)
-    evaluator = Evaluation(graph=None, method_str=EVALUATION_METHOD, data=actual_data)
-    survivor_selector = Survivor_Selection(POP_SIZE, STR_LENGTH, SURVIVOR_METHOD)
-
-    # Initialize Population
-    population = initializer.initialize()
-    fitness = evaluator.evaluate(population)
-
-    population, mutation_index = mutator.mutate(population)
+    # Initialize Population and fitness
+    initializer.initialize()
+    evaluator.evaluate()
     end_timer("setup")
 
     # ITERATE FOR GENERATIONS
     print("*" * 20)
-    print("Initial Mean Fitness: {}\t Best Fitness:{}".format(fitness.mean(), fitness.max()))
-    print("Best initial member of Population:\n", population[np.argmax(fitness)])
+    print("Initial Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
+    print("Best initial member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 20)
     for n in range(NUM_GENERATIONS):
         # select parents and spawn children
-        parents = parent_selector.select(population, NUM_PARENTS)
-        children = recombinator.recombine(population, parents)
+        parent_selector.select()
+        recombinator.recombine()
         # mutate population and children
-        population, population_mutation_index = mutator.mutate(population)
-        children, children_mutation_index = mutator.mutate(children)
+        mutator.mutate_population()
+        mutator.mutate_children()
         # re-evaluate children and population
-        child_fitness = evaluator.evaluate(children)
-        fitness = evaluator.evaluate(population)
+        evaluator.evaluate_population()
+        evaluator.evaluate_children()
         #print(fitness)
         # select from parents and children to form new population
         population, fitness = survivor_selector.select(population, fitness, children, child_fitness)
