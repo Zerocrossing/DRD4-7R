@@ -79,11 +79,9 @@ def DEMO_FUNCTIONALITY():
     print("Initial Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
     print("Best initial member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 20)
-    current_generation = 0
     current_time = 0
 
-    while terminator.method(current_generation, current_time):
-
+    while terminator.method(tsp.current_generation, current_time):
         # select parents and spawn children
         parent_selector.select()
         recombinator.recombine()
@@ -98,8 +96,9 @@ def DEMO_FUNCTIONALITY():
         # add history and print debugs every 10%
         tsp.add_history("mean_fitness",tsp.fitness.mean())
         tsp.add_history("best_fitness",tsp.fitness.max())
-        if not (n % (NUM_GENERATIONS // 10)):
-            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(n, tsp.fitness.mean(), tsp.fitness.max()))
+        tsp.current_generation +=1
+        if not (tsp.current_generation % (tsp.num_generations // 10)):
+            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max()))
 
     # finished, print results
     print("*" * 20)
