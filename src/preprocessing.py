@@ -1,12 +1,22 @@
 import numpy as np
-from src.file_utils import parse_file
 
 # crude start to preprocessing
-
 def euclidean(a,b):
+    """
+    Returns the euclidean distance between two points
+    :param a:
+    :param b:
+    :return:
+    """
     return np.linalg.norm(a-b)
 
+# Need to numpy the hell out of this
 def get_secret_stuff(data):
+    """
+    Top Secret Data!
+    :param data:
+    :return: dictionary of distances between each pair (smaller,larger)
+    """
 
     distances = {}
 

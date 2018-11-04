@@ -19,6 +19,7 @@ from src.utils import *
 from src.utils import debug_print as print
 from src.preprocessing import get_secret_stuff
 from src.file_utils import parse_file as parse
+import matplotlib.pyplot as plt
 
 # CONSTS
 POP_SIZE = 20
@@ -35,6 +36,16 @@ SURVIVOR_METHOD = "mu_plus_lambda"
 DEBUG = True
 
 
+def plot(data, arr):
+    #plt.scatter(*zip(*data))
+
+    x,y = zip(*data)
+
+    for i in range(0, len(arr)-1):
+        plt.plot(x[arr[i]:arr[i+1]], y[arr[i]:arr[i + 1]], 'ro-')
+    plt.show()
+
+
 def DEMO_FUNCTIONALITY():
     """
     Provided in initial commit to demo workflow concept
@@ -48,7 +59,7 @@ def DEMO_FUNCTIONALITY():
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
 
-    actual_data = parse(middle_data)
+    actual_data = parse(small_data)
 
     STR_LENGTH = len(actual_data)
 
@@ -96,6 +107,7 @@ def DEMO_FUNCTIONALITY():
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
 
+    plot(actual_data, population[np.argmax(fitness)])
 
 if __name__ == '__main__':
     set_debug(DEBUG)
