@@ -19,8 +19,8 @@ class Evaluation:
         :param method_str:
         :return:
         """
-        if method_str.lower() == "use secret stuff":
-            self.method = self.use_secret_stuff
+        if method_str.lower() == "use_secret_stuff":
+            self.method = self.use_preprocessed_array
             print("Euclidean distance method selected for evaluation")
         elif method_str.lower() == "demo_in_order":
             self.method = self.DEMO_IN_ORDER
@@ -34,23 +34,21 @@ class Evaluation:
         add_timer("evaluation")
         return eval
 
-    def euclidean(population):
+    def euclidean(self,a,b):
         """
         euclidean distance
         """
-        pass
+        if a>b:
+            a,b = b,a
+        return self.data[a,b]
 
     # Need to use an efficient implementation for this
-    def use_secret_stuff(self, population):
+    def use_preprocessed_array(self, population):
         distance = []
         for individual in population:
             current_distance = 0
-            for a in range(len(population-1)):
-                for b in range(a+1,len(population)):
-                    small, big = individual[a], individual[b]
-                    if small>big:
-                        small, big = big, small
-                    current_distance -= self.data[small,big]
+            for a in range(len(individual)-1):
+                current_distance -= self.euclidean(individual[a], individual[a+1])
             distance.append(current_distance)
 
         return np.array(distance)

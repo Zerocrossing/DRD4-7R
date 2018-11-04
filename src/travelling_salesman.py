@@ -14,36 +14,29 @@ from src.recombination import Recombination
 from src.mutation import Mutation
 from src.evaluation import Evaluation
 from src.survivor_selection import Survivor_Selection
+from src.termination import Termination
+from src.animation import Animation
 import src.file_utils as files
 from src.utils import *
 from src.utils import debug_print as print
-from src.preprocessing import get_secret_stuff
 from src.file_utils import parse_file as parse
-import matplotlib.pyplot as plt
 
 # CONSTS
 POP_SIZE = 20
 STR_LENGTH = 10
 NUM_PARENTS = 10
 NUM_GENERATIONS = 50
+TIME_LIMIT = 100000
 MUTATION_RATE = .2
 INIT_METHOD = "random_permutations"
 SELECT_METHOD = "random"
 CROSSOVER_METHOD = "cut_and_crossfill"
 MUTATION_METHOD = "swap"
-EVALUATION_METHOD = "use secret stuff"
+EVALUATION_METHOD = "use_secret_stuff"
 SURVIVOR_METHOD = "mu_plus_lambda"
+TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-
-
-def plot(data, arr):
-    #plt.scatter(*zip(*data))
-
-    x,y = zip(*data)
-
-    for i in range(0, len(arr)-1):
-        plt.plot(x[arr[i]:arr[i+1]], y[arr[i]:arr[i + 1]], 'ro-')
-    plt.show()
+PLOT = True
 
 
 def DEMO_FUNCTIONALITY():
@@ -59,7 +52,7 @@ def DEMO_FUNCTIONALITY():
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
 
-    actual_data = parse(small_data)
+    actual_data = parse(middle_data)
 
     STR_LENGTH = len(actual_data)
 
@@ -69,6 +62,8 @@ def DEMO_FUNCTIONALITY():
     mutator = Mutation(str_length=STR_LENGTH, mutation_rate=MUTATION_RATE, method_str=MUTATION_METHOD)
     evaluator = Evaluation(graph=None, method_str=EVALUATION_METHOD, data=actual_data)
     survivor_selector = Survivor_Selection(POP_SIZE, STR_LENGTH, SURVIVOR_METHOD)
+    terminator = Termination(NUM_GENERATIONS, TIME_LIMIT, TERMINATOR_METHOD)
+    animator = Animation(actual_data)
 
     # Initialize Population
     population = initializer.initialize()
@@ -81,8 +76,13 @@ def DEMO_FUNCTIONALITY():
     print("*" * 20)
     print("Initial Mean Fitness: {}\t Best Fitness:{}".format(fitness.mean(), fitness.max()))
     print("Best initial member of Population:\n", population[np.argmax(fitness)])
+    #plot(actual_data, population[np.argmax(fitness)])
     print("*" * 20)
-    for n in range(NUM_GENERATIONS):
+    current_generation = 0
+    current_time = 0
+
+    while terminator.method(current_generation, current_time):
+
         # select parents and spawn children
         parents = parent_selector.select(population, NUM_PARENTS)
         children = recombinator.recombine(population, parents)
@@ -92,12 +92,19 @@ def DEMO_FUNCTIONALITY():
         # re-evaluate children and population
         child_fitness = evaluator.evaluate(children)
         fitness = evaluator.evaluate(population)
-        #print(fitness)
+        # print(fitness)
         # select from parents and children to form new population
         population, fitness = survivor_selector.select(population, fitness, children, child_fitness)
         # print debugs every 10%
-        if not (n % (NUM_GENERATIONS // 10)):
-            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(n, fitness.mean(), fitness.max()))
+        if not (current_generation % (NUM_GENERATIONS // 10)):
+            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(current_generation, fitness.mean(), fitness.max()))
+            if PLOT:
+                animator.update(population[np.argmax(fitness)])
+
+        current_generation +=1
+        #current_time = get_time("evaluation") + get_time("recombination") + get_time("parent selection") + \
+                       #get_time("survivor selection") + get_time("mutation")
+
 
     # finished, print results
     print("*" * 20)
@@ -107,7 +114,9 @@ def DEMO_FUNCTIONALITY():
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
 
-    plot(actual_data, population[np.argmax(fitness)])
+    if PLOT:
+        animator.update(population[np.argmax(fitness)])
+
 
 if __name__ == '__main__':
     set_debug(DEBUG)
