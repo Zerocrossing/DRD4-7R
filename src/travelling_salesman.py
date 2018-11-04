@@ -69,6 +69,7 @@ def DEMO_FUNCTIONALITY():
     evaluator = Evaluation(tsp, method_str=EVALUATION_METHOD)
     survivor_selector = Survivor_Selection(tsp, SURVIVOR_METHOD)
     terminator = Termination(NUM_GENERATIONS, TIME_LIMIT, TERMINATOR_METHOD)
+    animator = Animation(actual_data)
     # Initialize Population and fitness
     initializer.initialize()
     evaluator.evaluate()
@@ -99,6 +100,8 @@ def DEMO_FUNCTIONALITY():
         tsp.current_generation +=1
         if not (tsp.current_generation % (tsp.num_generations // 10)):
             print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max()))
+            if PLOT:
+                animator.update(tsp.population[np.argmax(tsp.fitness.max())])
 
     # finished, print results
     print("*" * 20)
@@ -110,6 +113,8 @@ def DEMO_FUNCTIONALITY():
 
     tsp.plot_history("mean_fitness")
     tsp.plot_history("best_fitness")
+    if PLOT:
+        animator.update(tsp.population[np.argmax(tsp.fitness.max())])
 
 
 if __name__ == '__main__':
