@@ -7,9 +7,8 @@ from src.utils import *
 
 class Survivor_Selection:
 
-    def __init__(self, pop_size, str_len, method_str):
-        self.pop_size = pop_size
-        self.str_len = str_len
+    def __init__(self, tsp_instance, method_str):
+        self.tsp = tsp_instance
         self.set_method(method_str)
 
     def set_method(self, method_str):
@@ -26,20 +25,20 @@ class Survivor_Selection:
         else:
             raise Exception("Incorrect method selected for survivor selection")
 
-    def select(self, population, population_fitness, children, children_fitness):
+    def select(self):
         start_timer("survivor selection")
-        new_population, new_fitness = self.method(population, population_fitness, children, children_fitness)
+        self.method()
         add_timer("survivor selection")
-        return new_population, new_fitness
 
-    def random(self, population, population_fitness, children, children_fitness):
-        combo_pop = np.append(population, children, axis=0)
-        combo_fitness = np.append(population_fitness, children_fitness)
-        selection = np.random.randint(population.shape[0], size=population.shape[0])
-        return combo_pop[selection], combo_fitness[selection]
+    def random(self):
+        combo_pop = np.append(self.tsp.population, self.tsp.children, axis=0)
+        combo_fitness = np.append(self.tsp.fitness, self.tsp.children_fitness)
+        selection = np.random.randint(self.tsp.population.shape[0], size=self.population.shape[0])
+        self.tsp.population = combo_pop[selection]
+        self.tsp.fitness = combo_fitness[selection]
 
-    def mu_plus_lambda(self, population, population_fitness, children, children_fitness):
-        combo_pop = np.append(population, children, axis=0)
-        combo_fitness = np.append(population_fitness, children_fitness)
+    def mu_plus_lambda(self):
+        combo_pop = np.append(self.tsp.population, self.tsp.children, axis=0)
+        combo_fitness = np.append(self.tsp.fitness, self.tsp.children_fitness)
         args = np.argsort(combo_fitness)
-        return combo_pop[args][-population.shape[0]:], combo_fitness[args][-population.shape[0]:]
+        return combo_pop[args][-self.tsp.population.shape[0]:], combo_fitness[args][-self.tsp.population.shape[0]:]

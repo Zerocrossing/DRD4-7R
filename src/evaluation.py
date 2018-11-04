@@ -8,10 +8,11 @@ from src.preprocessing import get_secret_stuff
 
 class Evaluation:
 
-    def __init__(self, graph, method_str, data):
-        self.graph = graph
+    def __init__(self, tsp_instance, method_str):
+        self.tsp = tsp_instance
         self.set_method(method_str)
-        self.data = get_secret_stuff(data)
+        self.data = get_secret_stuff(tsp_instance.graph)
+        print("DICT LENGTH",len(self.data))
 
     def set_method(self, method_str):
         """
@@ -27,12 +28,18 @@ class Evaluation:
             print("In order method selected for evaluation")
         else:
             raise Exception("Incorrect method selected for evaluation")
-
-    def evaluate(self, population):
+    # todo incorporate mutation masking to save time (only calculate fitness for individuals we mutated)
+    def evaluate(self):
         start_timer("evaluation")
-        eval = self.method(population)
+        fitness = self.method(self.tsp.population)
+        self.tsp.fitness = fitness
         add_timer("evaluation")
-        return eval
+
+    def evaluate_children(self):
+        start_timer("evaluation")
+        fitness = self.method(self.tsp.children)
+        self.tsp.children_fitness = fitness
+        add_timer("evaluation")
 
     def euclidean(self,a,b):
         """
@@ -50,9 +57,8 @@ class Evaluation:
             for a in range(len(individual)-1):
                 current_distance -= self.euclidean(individual[a], individual[a+1])
             distance.append(current_distance)
-
         return np.array(distance)
 
-    def DEMO_IN_ORDER(self, population):
-        roll = np.roll(population, 1, axis=1)
-        return (population[:,1:]> roll[:,1:] ).sum(axis=1)
+    def DEMO_IN_ORDER(self):
+        roll = np.roll(self.tsp.population, 1, axis=1)
+        self.tsp.fitness = (self.tsp.population[:,1:]> roll[:,1:] ).sum(axis=1)

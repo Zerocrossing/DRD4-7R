@@ -8,6 +8,7 @@ Anything with "DEMO" in it's name is obviously not a proper implementation and w
 """
 
 import numpy as np
+from src.tsp_instance import TSP
 from src.initialization import Initialization
 from src.parent_selection import Parent_Selection
 from src.recombination import Recombination
@@ -51,32 +52,32 @@ def DEMO_FUNCTIONALITY():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-
-    actual_data = parse(middle_data)
-
-    STR_LENGTH = len(actual_data)
-
-    initializer = Initialization(POP_SIZE, STR_LENGTH, INIT_METHOD)
-    parent_selector = Parent_Selection(POP_SIZE, STR_LENGTH, SELECT_METHOD)
-    recombinator = Recombination(POP_SIZE, STR_LENGTH, CROSSOVER_METHOD)
-    mutator = Mutation(str_length=STR_LENGTH, mutation_rate=MUTATION_RATE, method_str=MUTATION_METHOD)
-    evaluator = Evaluation(graph=None, method_str=EVALUATION_METHOD, data=actual_data)
-    survivor_selector = Survivor_Selection(POP_SIZE, STR_LENGTH, SURVIVOR_METHOD)
+    actual_data = parse(small_data)
+    # Create Instance
+    tsp = TSP(
+        graph           = actual_data,
+        population_size = POP_SIZE,
+        num_parents     = NUM_PARENTS,
+        mutation_rate   = MUTATION_RATE,
+        num_generations = NUM_GENERATIONS
+    )
+    # Initialize modules
+    initializer = Initialization(tsp, INIT_METHOD)
+    parent_selector = Parent_Selection(tsp, SELECT_METHOD)
+    recombinator = Recombination(tsp, CROSSOVER_METHOD)
+    mutator = Mutation(tsp, method_str=MUTATION_METHOD)
+    evaluator = Evaluation(tsp, method_str=EVALUATION_METHOD)
+    survivor_selector = Survivor_Selection(tsp, SURVIVOR_METHOD)
     terminator = Termination(NUM_GENERATIONS, TIME_LIMIT, TERMINATOR_METHOD)
-    animator = Animation(actual_data)
-
-    # Initialize Population
-    population = initializer.initialize()
-    fitness = evaluator.evaluate(population)
-
-    population, mutation_index = mutator.mutate(population)
+    # Initialize Population and fitness
+    initializer.initialize()
+    evaluator.evaluate()
     end_timer("setup")
 
     # ITERATE FOR GENERATIONS
     print("*" * 20)
-    print("Initial Mean Fitness: {}\t Best Fitness:{}".format(fitness.mean(), fitness.max()))
-    print("Best initial member of Population:\n", population[np.argmax(fitness)])
-    #plot(actual_data, population[np.argmax(fitness)])
+    print("Initial Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
+    print("Best initial member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 20)
     current_generation = 0
     current_time = 0
@@ -84,38 +85,32 @@ def DEMO_FUNCTIONALITY():
     while terminator.method(current_generation, current_time):
 
         # select parents and spawn children
-        parents = parent_selector.select(population, NUM_PARENTS)
-        children = recombinator.recombine(population, parents)
+        parent_selector.select()
+        recombinator.recombine()
         # mutate population and children
-        population, population_mutation_index = mutator.mutate(population)
-        children, children_mutation_index = mutator.mutate(children)
+        mutator.mutate_population()
+        mutator.mutate_children()
         # re-evaluate children and population
-        child_fitness = evaluator.evaluate(children)
-        fitness = evaluator.evaluate(population)
-        # print(fitness)
+        evaluator.evaluate()
+        evaluator.evaluate_children()
         # select from parents and children to form new population
-        population, fitness = survivor_selector.select(population, fitness, children, child_fitness)
-        # print debugs every 10%
-        if not (current_generation % (NUM_GENERATIONS // 10)):
-            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(current_generation, fitness.mean(), fitness.max()))
-            if PLOT:
-                animator.update(population[np.argmax(fitness)])
-
-        current_generation +=1
-        #current_time = get_time("evaluation") + get_time("recombination") + get_time("parent selection") + \
-                       #get_time("survivor selection") + get_time("mutation")
-
+        survivor_selector.select()
+        # add history and print debugs every 10%
+        tsp.add_history("mean_fitness",tsp.fitness.mean())
+        tsp.add_history("best_fitness",tsp.fitness.max())
+        if not (n % (NUM_GENERATIONS // 10)):
+            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(n, tsp.fitness.mean(), tsp.fitness.max()))
 
     # finished, print results
     print("*" * 20)
-    print("Final Mean Fitness: {}\t Best Fitness:{}".format(fitness.mean(), fitness.max()))
-    print("Best Member of Population:\n", population[np.argmax(fitness)])
+    print("Final Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
+    print("Best Member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 10 + "\nFunction Times (in ms):\n")
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
 
-    if PLOT:
-        animator.update(population[np.argmax(fitness)])
+    tsp.plot_history("mean_fitness")
+    tsp.plot_history("best_fitness")
 
 
 if __name__ == '__main__':

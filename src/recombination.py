@@ -8,9 +8,8 @@ from src.utils import *
 
 class Recombination:
 
-    def __init__(self, pop_size, str_len, method_str):
-        self.pop_size = pop_size
-        self.str_len = str_len
+    def __init__(self, tsp_instance, method_str):
+        self.tsp = tsp_instance
         self.set_method(method_str)
 
     def set_method(self, method_str):
@@ -25,18 +24,19 @@ class Recombination:
         else:
             raise Exception("Incorrect method selected for recombination")
 
-    def recombine(self, population, selected_parents):
+    def recombine(self):
         start_timer("recombination")
+        selected_parents = self.tsp.parent_index
         num_parents = len(selected_parents)
-        children = np.zeros((num_parents, self.str_len), dtype=np.int)
+        children = np.zeros((num_parents, self.tsp.string_length), dtype=np.int)
         for n in np.arange(0, len(selected_parents), 2):
-            p1 = population[selected_parents[n]]
-            p2 = population[selected_parents[n + 1]]
+            p1 = self.tsp.population[selected_parents[n]]
+            p2 = self.tsp.population[selected_parents[n + 1]]
             c1, c2 = self.method(p1, p2)
             children[n] = c1
             children[n + 1] = c2
+        self.tsp.children = children
         add_timer("recombination")
-        return children
 
     def cut_and_crossfill(self, parent1, parent2):
         """
