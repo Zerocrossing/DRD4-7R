@@ -87,6 +87,8 @@ def the_tsp_problem():
         # add history and print debugs every 10%
         tsp.add_history("mean_fitness",tsp.fitness.mean())
         tsp.add_history("best_fitness",tsp.fitness.max())
+        tsp.add_history("best_individual",tsp.population[np.argmax(tsp.fitness.max())])
+
         tsp.current_generation +=1
         if not (tsp.current_generation % (tsp.num_generations // 10)):
             print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max()))
