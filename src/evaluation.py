@@ -24,33 +24,40 @@ class Evaluation:
             print("Euclidean distance method selected for evaluation")
         else:
             raise Exception("Incorrect method selected for evaluation")
+
     # todo incorporate mutation masking to save time (only calculate fitness for individuals we mutated)
-    def evaluate(self):
+    def evaluate(self, use_mask=False):
         start_timer("evaluation")
-        fitness = self.method(self.tsp.population)
-        self.tsp.fitness = fitness
+        if not use_mask:
+            self.tsp.fitness = self.method(self.tsp.population)
+        # else we only evaluate individuals who are indicated to be evaluated
+        elif self.tsp.mutant_index.size != 0:
+            self.tsp.fitness[self.tsp.mutant_index] = self.method(self.tsp.population[self.tsp.mutant_index])
         add_timer("evaluation")
 
-    def evaluate_children(self):
+    def evaluate_children(self, use_mask=False):
         start_timer("evaluation")
-        fitness = self.method(self.tsp.children)
-        self.tsp.children_fitness = fitness
+        if not use_mask:
+            self.tsp.children_fitness = self.method(self.tsp.children)
+        elif self.tsp.mutant_children_index.size != 0:
+            self.tsp.children_fitness[self.tsp.mutant_children_index] = self.method(
+                self.tsp.children[self.tsp.mutant_children_index])
         add_timer("evaluation")
 
-    def euclidean(self,a,b):
+    def euclidean(self, a, b):
         """
         euclidean distance
         """
-        if a>b:
-            a,b = b,a
-        return self.data[a,b]
+        if a > b:
+            a, b = b, a
+        return self.data[a, b]
 
     # Need to use an efficient implementation for this
     def use_preprocessed_array(self, population):
         distance = []
         for individual in population:
             current_distance = 0
-            for a in range(len(individual)-1):
-                current_distance -= self.euclidean(individual[a], individual[a+1])
+            for a in range(len(individual) - 1):
+                current_distance -= self.euclidean(individual[a], individual[a + 1])
             distance.append(current_distance)
         return np.array(distance)

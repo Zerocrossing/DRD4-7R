@@ -20,13 +20,20 @@ class Parent_Selection:
         if method_str.lower() == "random":
             self.method = self.random
             print("Random method selected for parent selection")
+        elif method_str.lower() == "mu_plus_lambda":
+            self.method = self.mu_plus_lambda
+            print("mu+lambda method selected for survivor selection")
         else:
             raise Exception("Incorrect method selected for parent selection")
 
     def select(self):
         start_timer("parent selection")
-        self.tsp.parent_index = self.method()
+        self.method()
         add_timer("parent selection")
 
     def random(self):
-        return np.random.choice(self.tsp.population_size, self.tsp.num_parents, replace=False)
+        self.tsp.parent_index = np.random.choice(self.tsp.population_size, self.tsp.num_parents, replace=False)
+
+    def mu_plus_lambda(self):
+        args = np.argsort(self.tsp.fitness)[::-1]
+        self.tsp.parent_index = args[:self.tsp.num_parents]

@@ -33,12 +33,13 @@ class Survivor_Selection:
     def random(self):
         combo_pop = np.append(self.tsp.population, self.tsp.children, axis=0)
         combo_fitness = np.append(self.tsp.fitness, self.tsp.children_fitness)
-        selection = np.random.randint(self.tsp.population.shape[0], size=self.population.shape[0])
+        selection = np.random.randint(self.tsp.population.shape[0], size=self.tsp.population.shape[0])
         self.tsp.population = combo_pop[selection]
         self.tsp.fitness = combo_fitness[selection]
 
     def mu_plus_lambda(self):
         combo_pop = np.append(self.tsp.population, self.tsp.children, axis=0)
         combo_fitness = np.append(self.tsp.fitness, self.tsp.children_fitness)
-        args = np.argsort(combo_fitness)
-        return combo_pop[args][-self.tsp.population.shape[0]:], combo_fitness[args][-self.tsp.population.shape[0]:]
+        args = np.argsort(combo_fitness)[::-1]
+        self.tsp.population = combo_pop[args][:self.tsp.population_size]
+        self.tsp.fitness = combo_fitness[args][:self.tsp.population_size]

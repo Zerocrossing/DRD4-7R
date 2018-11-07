@@ -20,18 +20,20 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 50
+POP_SIZE = 100
 # STR_LENGTH = 10
-NUM_PARENTS = 10
-NUM_GENERATIONS = 100
+NUM_PARENTS = 100
+NUM_GENERATIONS = 250
 TIME_LIMIT = 100000
-MUTATION_RATE = .05
+MUTATION_RATE = .2
 INIT_METHOD = "random_permutations"
-SELECT_METHOD = "random"
+# SELECT_METHOD = "random"
+SELECT_METHOD = "mu_plus_lambda"
 # CROSSOVER_METHOD = "cut_and_crossfill"
 CROSSOVER_METHOD = "order_crossover"
 MUTATION_METHOD = "swap"
 EVALUATION_METHOD = "precalculate_distances"
+# SURVIVOR_METHOD = "random"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
@@ -80,7 +82,7 @@ def the_tsp_problem():
         mutator.mutate_population()
         mutator.mutate_children()
         # re-evaluate children and population
-        evaluator.evaluate()
+        evaluator.evaluate(use_mask=True)
         evaluator.evaluate_children()
         # select from parents and children to form new population
         survivor_selector.select()
@@ -97,8 +99,8 @@ def the_tsp_problem():
 
     # finished, print results
     print("*" * 20)
-    print("Final Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
     print("Best Member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
+    print("Final Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
     print("*" * 10 + "\nFunction Times (in ms):\n")
     for k, v in get_times():
         print("{:16}\t{:.2f}".format(k, v * 1000))
