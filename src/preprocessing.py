@@ -1,26 +1,14 @@
 import numpy as np
 
-# crude start to preprocessing
-def euclidean(a,b):
-    """
-    Returns the euclidean distance between two points
-    """
-    return np.linalg.norm(a-b)
-
-# Need to numpy the hell out of this
 def precalculate_distances(data):
     """
-    Top Secret Data!
-    :param data:
-    :return: dictionary of distances between each pair (smaller,larger)
+    returns a numpy array where [x][y] is the distance between those two indices in the dataset
+    for example array[1][5] will return the distance between the first and fifth cities
     """
-
-    distances = {}
-
-    for a in range(len(data)-1):
-        for b in range(a+1, len(data)):
-            key = (a, b)
-            distances[key] = euclidean(data[a], data[b])
-
-    return distances
+    dim = data.shape[0]
+    out = np.zeros((dim,dim))
+    for n in np.arange(dim):
+        dist = np.linalg.norm(data[n]-data,axis=1)
+        out[n]= dist
+    return out
 

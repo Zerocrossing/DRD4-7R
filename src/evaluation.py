@@ -11,7 +11,7 @@ class Evaluation:
     def __init__(self, tsp_instance, method_str):
         self.tsp = tsp_instance
         self.set_method(method_str)
-        self.data = precalculate_distances(tsp_instance.graph)
+        self.dist_cache = precalculate_distances(tsp_instance.graph)
 
     def set_method(self, method_str):
         """
@@ -19,13 +19,12 @@ class Evaluation:
         :param method_str:
         :return:
         """
-        if method_str.lower() == "precalculate_distances":
+        if method_str.lower() == "cached_euclidean":
             self.method = self.use_preprocessed_array
-            print("Euclidean distance method selected for evaluation")
+            print("Cached euclidean distance method selected for evaluation")
         else:
             raise Exception("Incorrect method selected for evaluation")
 
-    # todo incorporate mutation masking to save time (only calculate fitness for individuals we mutated)
     def evaluate(self, use_mask=False):
         start_timer("evaluation")
         if not use_mask:
@@ -44,20 +43,6 @@ class Evaluation:
                 self.tsp.children[self.tsp.mutant_children_index])
         add_timer("evaluation")
 
-    def euclidean(self, a, b):
-        """
-        euclidean distance
-        """
-        if a > b:
-            a, b = b, a
-        return self.data[a, b]
-
-    # Need to use an efficient implementation for this
     def use_preprocessed_array(self, population):
-        distance = []
-        for individual in population:
-            current_distance = 0
-            for a in range(len(individual) - 1):
-                current_distance -= self.euclidean(individual[a], individual[a + 1])
-            distance.append(current_distance)
-        return np.array(distance)
+        pop_roll = np.roll(population, 1, axis=1)
+        return self.dist_cache[population, pop_roll].sum(axis=1)
