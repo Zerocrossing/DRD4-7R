@@ -45,4 +45,4 @@ class Evaluation:
 
     def use_preprocessed_array(self, population):
         pop_roll = np.roll(population, 1, axis=1)
-        return self.dist_cache[population, pop_roll].sum(axis=1)
+        return -self.dist_cache[population, pop_roll].sum(axis=1)
