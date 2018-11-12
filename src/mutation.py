@@ -21,6 +21,9 @@ class Mutation:
         if method_str.lower() == "swap":
             self.method = self.swap
             print("Swap method selected for mutation")
+        elif method_str.lower() == "flip":
+            self.method = self.flip
+            print("Substring flip method selected for mutation")
         else:
             raise Exception("Incorrect method selected for mutation")
 
@@ -48,9 +51,20 @@ class Mutation:
             self.tsp.mutant_children_index = selection
         add_timer("mutation")
 
-    # todo: there has to be a numpy-esque way to do this
     def swap(self, population):
         rnd = np.random.randint(0, self.tsp.string_length, size=(population.shape[0], 2))
         for num, vals in enumerate(rnd):
             population[num][vals[0]], population[num][vals[1]] = population[num][vals[1]], population[num][vals[0]]
+        return population
+
+    #TODO: numpy me
+    def flip(self, population):
+        """
+        flips the order of a substring of the population between 2 points
+        """
+        for num, vals in enumerate(population):
+            start = np.random.randint(1, self.tsp.string_length - 2)
+            end = np.random.randint(2, self.tsp.string_length - start) + start
+            flip = np.flip(vals[start:end], axis=0)
+            population[num][start:end] = flip
         return population
