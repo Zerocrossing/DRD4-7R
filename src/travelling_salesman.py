@@ -20,7 +20,7 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 1000
+POP_SIZE = 200
 NUM_PARENTS = 100
 NUM_GENERATIONS = 500
 TIME_LIMIT = 100000
@@ -46,7 +46,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(small_data)
+    actual_data = parse(middle_data)
     # Create Instance
     tsp = TSP(
         graph           = actual_data,
