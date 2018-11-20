@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import ffmpeg
+import pygame
+from moviepy.editor import *
 from src.utils import *
+
 
 # Need to figure out how to use animation (funcanimation or similar) to keep the same figure and update
 class Animation:
@@ -15,7 +17,7 @@ class Animation:
         plt.gca().invert_xaxis()
         plt.xlabel("Longitude")
         plt.ylabel("Latitude")
-        plt.title("Animation of Best Individual Over Multiple Generations")
+        plt.title("Best Individual from Every Generation Group")
         for index in range(len(self.history[0])-1):
             lobj = self.ax.plot([], [])[0]
             self.lines.append(lobj)
@@ -47,6 +49,7 @@ class Animation:
         anim.save('animation.mp4')
         self.plot_last()
         plt.show()
+        self.play()
         add_timer("animation")
 
     def plot_last(self):
@@ -55,3 +58,13 @@ class Animation:
             x1, x2 = self.x[arr[i]], self.x[arr[i + 1]]
             y1, y2 = self.y[arr[i]], self.y[arr[i + 1]]
             plt.plot([y1, y2], [x1, x2], 'k-')
+
+    def play(self):
+        pygame.display.set_caption('The Exploring Gene')
+
+        clip = VideoFileClip('animation.mp4')
+        clip.preview()
+
+        #pygame.quit()
+        return
+

@@ -37,7 +37,7 @@ EVALUATION_METHOD = "cached_euclidean"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-PLOT = False
+PLOT = True
 
 
 def the_tsp_problem():
@@ -46,7 +46,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(big_data)
+    actual_data = parse(small_data)
     # Create Instance
     tsp = TSP(
         graph           = actual_data,
