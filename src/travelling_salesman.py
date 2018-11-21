@@ -21,8 +21,8 @@ from src.file_utils import parse_file as parse
 
 # CONSTS
 POP_SIZE = 1000
-NUM_PARENTS = 10
-NUM_GENERATIONS = 10
+NUM_PARENTS = 100
+NUM_GENERATIONS = 500
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -47,7 +47,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(x_large_data)
+    actual_data = parse(small_data)
 
     # Create Instance
     tsp = TSP(
