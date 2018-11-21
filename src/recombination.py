@@ -54,17 +54,11 @@ class Recombination:
             cut = (cut + 1) % len(parent1)
         return offspring1, offspring2
 
-    # def order_crossover(self, parent1, parent2):
-    #     half_len = parent1.size // 2
-    #     cut = np.random.randint(1, half_len)
-    #     c1 = parent1[cut:cut + half_len]
-    #     c1 = np.insert(parent2[~np.isin(parent2, c1)], cut, c1)
-    #     c2 = parent2[cut:cut + half_len]
-    #     c2 = np.insert(parent1[~np.isin(parent1, c2)], cut, c2)
-    #     return c1, c2
 
-
-@njit(parallel=False, fastmath=True)
+# Parallel adds overhead which can negatively impact performance with low numbers of parents
+# for example: with the medium dataset and 100 parents per generation, parallel=True decreases performance
+#              however with 200 parents it improves it slightly
+@njit(parallel=True, fastmath=True)
 def order_crossover(parents):
     children = np.empty_like(parents, dtype=np.uint16)
     for n in prange(parents.shape[0] // 2):
