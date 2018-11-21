@@ -38,8 +38,22 @@ class Survivor_Selection:
         self.tsp.fitness = combo_fitness[selection]
 
     def mu_plus_lambda(self):
+        offspringSize = self.tsp.children_fitness.shape[0]
         combo_pop = np.append(self.tsp.population, self.tsp.children, axis=0)
         combo_fitness = np.append(self.tsp.fitness, self.tsp.children_fitness)
-        args = np.argsort(combo_fitness)[::-1]
-        self.tsp.population = combo_pop[args][:self.tsp.population_size]
-        self.tsp.fitness = combo_fitness[args][:self.tsp.population_size]
+
+        # Get the best mu individuals (i.e. exclude the worst lambda individuals)
+        survivorIndices = np.argpartition(combo_fitness, kth=offspringSize)[offspringSize:]
+        self.tsp.population = combo_pop[survivorIndices]
+        self.tsp.fitness = combo_fitness[survivorIndices]
+
+    def mu_comma_lambda(self):
+        offspringSize = self.tsp.children_fitness.shape[0]
+
+        #Get all individuals from the current population except for the lowest `offspringSize` individuals
+        survivorIndices = np.argpartition(self.tsp.fitness, kth=offspringSize)[offspringSize:]
+        survivors, survivorFitness = self.tsp.population[survivorIndices], self.tsp.fitness[survivorIndices]
+
+        #Establish next generation
+        self.tsp.population = np.append(survivors, self.tsp.children, axis=0)
+        self.tsp.fitness = np.append(survivorFitness, self.tsp.children_fitness)

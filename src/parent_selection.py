@@ -35,5 +35,5 @@ class Parent_Selection:
         self.tsp.parent_index = np.random.choice(self.tsp.population_size, self.tsp.num_parents, replace=False)
 
     def mu_plus_lambda(self):
-        args = np.argsort(self.tsp.fitness)[::-1]
-        self.tsp.parent_index = args[:self.tsp.num_parents]
+        parentIndices = np.argpartition(-self.tsp.fitness, kth=self.tsp.num_parents)[:self.tsp.num_parents]
+        self.tsp.parent_index = parentIndices
