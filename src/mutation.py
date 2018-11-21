@@ -4,6 +4,7 @@ Introducing small amounts of randomness to the population
 
 import numpy as np
 from src.utils import *
+from numba import njit, prange
 
 #TODO: Need to modify to accept fitness
 
@@ -61,13 +62,17 @@ class Mutation:
         return population
 
     #TODO: numpy me
-    def flip(self, population):
+    @staticmethod
+    @njit()
+    def flip(population):
         """
         flips the order of a substring of the population between 2 points
         """
-        for num, vals in enumerate(population):
-            start = np.random.randint(1, self.tsp.string_length - 2)
-            end = np.random.randint(2, self.tsp.string_length - start) + start
-            flip = np.flip(vals[start:end], axis=0)
+        for num in prange(population.shape[0]):
+            vals = population[num]
+            str_len = population[0].size
+            start = np.random.randint(1, str_len - 2)
+            end = np.random.randint(2, str_len - start) + start
+            flip = vals[end-1:start-1:-1]
             population[num][start:end] = flip
         return population
