@@ -29,8 +29,11 @@ class Mutation:
 
     def mutate_population(self):
         population = self.tsp.population
+        bestIndividual = np.argmax(self.tsp.fitness)
+
         start_timer("mutation")
         selection = np.random.random_sample(population.shape[0]) < self.tsp.mutation_rate
+        selection[bestIndividual] = False #Elitism: do not mutate best individual
         selection = np.argwhere(selection).flatten()
         if selection.size == 0:
             self.tsp.mutant_index = np.array([])
