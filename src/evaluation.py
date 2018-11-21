@@ -54,5 +54,5 @@ def dist_from_cache(population, cache):
         proll[1:] = p1[0:-1]
         proll[0] = p1[-1]
         for j in prange(p1.size):
-            out[n] += cache[p1[j],proll[j]]
+            out[n] -= cache[p1[j],proll[j]]
     return out
