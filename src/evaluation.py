@@ -45,7 +45,7 @@ class Evaluation:
         add_timer("evaluation")
 
 
-@jit(nopython=True, parallel=False, fastmath=True)
+@jit(nopython=True, parallel=True, fastmath=True)
 def dist_from_cache(population, cache):
     out = np.zeros(population.shape[0],dtype=np.float64)
     for n in prange(population.shape[0]):
