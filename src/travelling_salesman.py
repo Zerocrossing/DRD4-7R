@@ -22,7 +22,7 @@ from src.file_utils import parse_file as parse
 # CONSTS
 POP_SIZE = 200
 NUM_PARENTS = 100
-NUM_GENERATIONS = 50
+NUM_GENERATIONS = 1000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -37,7 +37,7 @@ EVALUATION_METHOD = "cached_euclidean"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-PLOT = True
+PLOT = False
 
 
 def the_tsp_problem():
