@@ -5,6 +5,7 @@ Includes data about the history of the population
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 class TSP:
 
     def __init__(self, graph, population_size, num_parents, mutation_rate, num_generations=None):
@@ -21,10 +22,10 @@ class TSP:
         self.children_fitness   = np.zeros(num_parents)
         self.mutant_index       = np.array([])
         self.mutant_children_index = np.array([])
+        self.best_individual = np.zeros(num_generations)
         # optional variables not used by every solution
         self.num_generations    = num_generations
         self.current_generation = 0
-
 
     def add_history(self, string, value):
         """

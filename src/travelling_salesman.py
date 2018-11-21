@@ -14,15 +14,14 @@ from src.evaluation import Evaluation
 from src.survivor_selection import Survivor_Selection
 from src.termination import Termination
 from src.animation import Animation
-import src.file_utils as files
 from src.utils import *
 from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 1000
-NUM_PARENTS = 100
-NUM_GENERATIONS = 500
+POP_SIZE = 100
+NUM_PARENTS = 10
+NUM_GENERATIONS = 50
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -37,7 +36,7 @@ EVALUATION_METHOD = "cached_euclidean"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-PLOT = True
+ANIMATE = True
 
 
 def the_tsp_problem():
@@ -74,7 +73,6 @@ def the_tsp_problem():
     # print("Best initial member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 20)
     current_time = 0
-    best_pop = []
 
     while terminator.method(tsp.current_generation, current_time):
         # select parents and spawn children
@@ -91,16 +89,16 @@ def the_tsp_problem():
         # add history and print debugs every 10%
         tsp.add_history("mean_fitness",tsp.fitness.mean())
         tsp.add_history("best_fitness",tsp.fitness.max())
-        tsp.add_history("best_individual",tsp.population[np.argmax(tsp.fitness.max())])
 
         tsp.current_generation +=1
         if not (tsp.current_generation % (tsp.num_generations // 10)):
             # print("Mutation Rate:",tsp.mutation_rate)
             print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max()))
-            best_pop.append(tsp.population[np.argmax(tsp.fitness.max())])
+            tsp.add_history("best_individual", tsp.population[np.argmax(tsp.fitness.max())])
 
-    if PLOT:
-        animator = Animation(actual_data, best_pop)
+    # If animation is set to true
+    if ANIMATE:
+        animator = Animation(actual_data, tsp.history["best_individual"])
         animator.start()
 
     # finished, print results
@@ -114,7 +112,6 @@ def the_tsp_problem():
         time_sum+=v
     print("-"*20)
     print("Total Time:\t{:.2f} seconds".format(time_sum))
-
 
     # plot history
     tsp.plot_history("mean_fitness")
