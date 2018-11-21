@@ -1,7 +1,5 @@
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
-import pygame
-from moviepy.editor import *
 from src.utils import *
 
 
@@ -43,14 +41,11 @@ class Animation:
         return self.lines
 
     def start(self):
-        start_timer("animation")
         anim = animation.FuncAnimation(self.fig, self.animate, init_func=self.init,
                                        frames =len(self.history), interval=500, blit=True)
         anim.save('animation.mp4')
         self.plot_last()
         plt.show()
-        self.play()
-        add_timer("animation")
 
     def plot_last(self):
         arr = self.history[-1]
@@ -58,13 +53,4 @@ class Animation:
             x1, x2 = self.x[arr[i]], self.x[arr[i + 1]]
             y1, y2 = self.y[arr[i]], self.y[arr[i + 1]]
             plt.plot([y1, y2], [x1, x2], 'k-')
-
-    def play(self):
-        pygame.display.set_caption('The Exploring Gene')
-
-        clip = VideoFileClip('animation.mp4')
-        clip.preview()
-
-        #pygame.quit()
-        return
 
