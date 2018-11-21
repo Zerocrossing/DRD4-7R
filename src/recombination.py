@@ -58,7 +58,7 @@ class Recombination:
 # Parallel adds overhead which can negatively impact performance with low numbers of parents
 # for example: with the medium dataset and 100 parents per generation, parallel=True decreases performance
 #              however with 200 parents it improves it slightly
-@njit(parallel=True, fastmath=True)
+@njit(parallel=False, fastmath=True)
 def order_crossover(parents):
     children = np.empty_like(parents, dtype=np.uint16)
     for n in prange(parents.shape[0] // 2):

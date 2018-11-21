@@ -4,6 +4,7 @@ Evaluation heuristics
 import numpy as np
 from src.utils import *
 from src.preprocessing import precalculate_distances
+from numba import jit, prange
 
 
 class Evaluation:
@@ -20,7 +21,7 @@ class Evaluation:
         :return:
         """
         if method_str.lower() == "cached_euclidean":
-            self.method = self.use_preprocessed_array
+            self.method = dist_from_cache
             print("Cached euclidean distance method selected for evaluation")
         else:
             raise Exception("Incorrect method selected for evaluation")
@@ -28,21 +29,30 @@ class Evaluation:
     def evaluate(self, use_mask=False):
         start_timer("evaluation")
         if not use_mask:
-            self.tsp.fitness = self.method(self.tsp.population)
+            self.tsp.fitness = self.method(self.tsp.population, self.dist_cache)
         # else we only evaluate individuals who are indicated to be evaluated
         elif self.tsp.mutant_index.size != 0:
-            self.tsp.fitness[self.tsp.mutant_index] = self.method(self.tsp.population[self.tsp.mutant_index])
+            self.tsp.fitness[self.tsp.mutant_index] = self.method(self.tsp.population[self.tsp.mutant_index], self.dist_cache)
         add_timer("evaluation")
 
     def evaluate_children(self, use_mask=False):
         start_timer("evaluation")
         if not use_mask:
-            self.tsp.children_fitness = self.method(self.tsp.children)
+            self.tsp.children_fitness = self.method(self.tsp.children, self.dist_cache)
         elif self.tsp.mutant_children_index.size != 0:
             self.tsp.children_fitness[self.tsp.mutant_children_index] = self.method(
-                self.tsp.children[self.tsp.mutant_children_index])
+                self.tsp.children[self.tsp.mutant_children_index], self.dist_cache)
         add_timer("evaluation")
 
-    def use_preprocessed_array(self, population):
-        pop_roll = np.roll(population, 1, axis=1)
-        return -self.dist_cache[population, pop_roll].sum(axis=1)
+
+@jit(nopython=True, parallel=False, fastmath=True)
+def dist_from_cache(population, cache):
+    out = np.zeros(population.shape[0],dtype=np.float64)
+    for n in prange(population.shape[0]):
+        p1 = population[n]
+        proll = np.zeros_like(p1)
+        proll[1:] = p1[0:-1]
+        proll[0] = p1[-1]
+        for j in prange(p1.size):
+            out[n] += cache[p1[j],proll[j]]
+    return out

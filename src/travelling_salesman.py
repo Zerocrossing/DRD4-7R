@@ -22,7 +22,7 @@ from src.file_utils import parse_file as parse
 # CONSTS
 POP_SIZE = 200
 NUM_PARENTS = 100
-NUM_GENERATIONS = 100
+NUM_GENERATIONS = 500
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
