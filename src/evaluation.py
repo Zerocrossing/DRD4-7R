@@ -50,9 +50,14 @@ def dist_from_cache(population, cache):
     out = np.zeros(population.shape[0],dtype=np.float64)
     for n in prange(population.shape[0]):
         p1 = population[n]
-        proll = np.zeros_like(p1)
-        proll[1:] = p1[0:-1]
-        proll[0] = p1[-1]
-        for j in prange(p1.size):
-            out[n] -= cache[p1[j],proll[j]]
+        out[n] = single_dist(p1,cache)
+        # for j in prange(p1.size):
+        #     out[n] -= cache[p1[j],p1[(j+1)%p1.size]]
+    return out
+
+@jit(nopython=True, parallel=False, fastmath=True)
+def single_dist(path,cache):
+    out = 0
+    for n in prange(path.size):
+        out -= cache[path[n], path[(n + 1) % path.size]]
     return out
