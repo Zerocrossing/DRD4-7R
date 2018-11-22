@@ -24,6 +24,8 @@ class Mutation:
             print("Swap method selected for mutation")
         elif method_str.lower() == "flip":
             self.method = self.flip
+        elif method_str.lower() == "scramble":
+            self.method = self.scramble
             print("Substring flip method selected for mutation")
         else:
             raise Exception("Incorrect method selected for mutation")
@@ -63,7 +65,7 @@ class Mutation:
 
     #TODO: numpy me
     @staticmethod
-    @njit()
+    @njit(parallel=False, fastmath=True)
     def flip(population):
         """
         flips the order of a substring of the population between 2 points
@@ -76,3 +78,16 @@ class Mutation:
             flip = vals[end-1:start-1:-1]
             population[num][start:end] = flip
         return population
+
+    @staticmethod
+    @njit(parallel=False, fastmath=True)
+    def scramble(population):
+        for num in prange(population.shape[0]):
+            memb = population[num]
+            str_len = memb.size
+            rand = np.random.randint(0,str_len,2)
+            if rand[0]>rand[1]:
+                rand = rand[::-1]
+            np.random.shuffle(memb[rand[0]:rand[1]])
+        return population
+

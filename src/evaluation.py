@@ -51,8 +51,6 @@ def dist_from_cache(population, cache):
     for n in prange(population.shape[0]):
         p1 = population[n]
         out[n] = single_dist(p1,cache)
-        # for j in prange(p1.size):
-        #     out[n] -= cache[p1[j],p1[(j+1)%p1.size]]
     return out
 
 @jit(nopython=True, parallel=False, fastmath=True)

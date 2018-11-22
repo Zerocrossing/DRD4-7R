@@ -58,16 +58,18 @@ class Recombination:
 # Parallel adds overhead which can negatively impact performance with low numbers of parents
 # for example: with the medium dataset and 100 parents per generation, parallel=True decreases performance
 #              however with 200 parents it improves it slightly
-@njit(parallel=False, fastmath=True)
+@njit(parallel=True, fastmath=True)
 def order_crossover(parents):
     children = np.empty_like(parents, dtype=np.uint16)
     for n in prange(parents.shape[0] // 2):
         p1 = parents[n * 2]
         p2 = parents[n * 2 + 1]
         start = np.random.randint(1, p1.size // 2)
-        slice = np.arange(start, start + p1.size // 2)
-        c1 = order_xover_2par(p1, p2, slice)
-        c2 = order_xover_2par(p2, p1, slice)
+        slice = np.zeros_like(p1)
+        slice[start:start+p1.size//2] = 1
+        slice_bool = slice!=0
+        c1 = order_xover_2par(p1, p2, slice_bool)
+        c2 = order_xover_2par(p2, p1, slice_bool)
         children[n * 2] = c1
         children[n * 2 + 1] = c2
     return children
@@ -75,11 +77,10 @@ def order_crossover(parents):
 
 @njit(parallel=False, fastmath=True)
 def order_xover_2par(p1, p2, slice):
-    inv_slice = in1d(np.arange(p1.size),slice)
-    child = np.zeros_like(p1)
+    child = np.empty_like(p1)
     child[slice] = p1[slice]
     p2_diff = in1d(p2,child[slice])
-    child[inv_slice] = p2[p2_diff]
+    child[~slice] = p2[p2_diff]
     return child
 
 
