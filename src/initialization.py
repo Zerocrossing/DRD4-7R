@@ -51,4 +51,4 @@ class Initialization:
         """
         randomized permutation candidate solutions
         """
-        return np.array([np.random.permutation(np.arange(0, self.tsp.string_length)) for n in np.arange(self.tsp.population_size)])
+        return np.array([np.random.permutation(np.arange(0, self.tsp.string_length)) for n in np.arange(self.tsp.population_size)],dtype=np.uint16)

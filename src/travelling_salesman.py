@@ -19,9 +19,9 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 100
-NUM_PARENTS = 10
-NUM_GENERATIONS = 50
+POP_SIZE = 500
+NUM_PARENTS = 500
+NUM_GENERATIONS = 4000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -31,6 +31,7 @@ SELECT_METHOD = "roulette_wheel"
 CROSSOVER_METHOD = "order_crossover"
 # MUTATION_METHOD = "swap"
 MUTATION_METHOD = "flip"
+# MUTATION_METHOD = "scramble"
 EVALUATION_METHOD = "cached_euclidean"
 # SURVIVOR_METHOD = "random"
 SURVIVOR_METHOD = "mu_plus_lambda"
@@ -46,7 +47,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(small_data)
+    actual_data = parse(middle_data)
 
     # Create Instance
     tsp = TSP(
@@ -89,11 +90,13 @@ def the_tsp_problem():
         # add history and print debugs every 10%
         tsp.add_history("mean_fitness",tsp.fitness.mean())
         tsp.add_history("best_fitness",tsp.fitness.max())
-
+        std = tsp.fitness.std()
+        tsp.add_history("std_dev",std)
         tsp.current_generation +=1
         if not (tsp.current_generation % (tsp.num_generations // 10)):
             # print("Mutation Rate:",tsp.mutation_rate)
-            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max()))
+            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{:5.2f}\t STD DEV: {:.2f}".format(
+                tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max(), std))
             tsp.add_history("best_individual", tsp.population[np.argmax(tsp.fitness.max())])
 
     # If animation is set to true
@@ -116,6 +119,7 @@ def the_tsp_problem():
     # plot history
     tsp.plot_history("mean_fitness")
     tsp.plot_history("best_fitness")
+    tsp.plot_history("std_dev")
 
 
 if __name__ == '__main__':
