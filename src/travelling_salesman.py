@@ -21,7 +21,7 @@ from src.file_utils import parse_file as parse
 # CONSTS
 POP_SIZE = 500
 NUM_PARENTS = 500
-NUM_GENERATIONS = 2500
+NUM_GENERATIONS = 4000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -37,7 +37,7 @@ EVALUATION_METHOD = "cached_euclidean"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-ANIMATE = False
+ANIMATE = True
 
 
 def the_tsp_problem():
@@ -90,11 +90,13 @@ def the_tsp_problem():
         # add history and print debugs every 10%
         tsp.add_history("mean_fitness",tsp.fitness.mean())
         tsp.add_history("best_fitness",tsp.fitness.max())
-
+        std = tsp.fitness.std()
+        tsp.add_history("std_dev",std)
         tsp.current_generation +=1
         if not (tsp.current_generation % (tsp.num_generations // 10)):
             # print("Mutation Rate:",tsp.mutation_rate)
-            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{}".format(tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max()))
+            print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{:5.2f}\t STD DEV: {:.2f}".format(
+                tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max(), std))
             tsp.add_history("best_individual", tsp.population[np.argmax(tsp.fitness.max())])
 
     # If animation is set to true
@@ -117,6 +119,7 @@ def the_tsp_problem():
     # plot history
     tsp.plot_history("mean_fitness")
     tsp.plot_history("best_fitness")
+    tsp.plot_history("std_dev")
 
 
 if __name__ == '__main__':
