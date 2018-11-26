@@ -48,6 +48,9 @@ def get_times():
     return _times.items()
 
 
+def clear_times():
+    _times.clear()
+
 # Debugging Methods
 
 def debug_print(*args):
