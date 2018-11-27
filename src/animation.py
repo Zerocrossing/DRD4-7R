@@ -4,21 +4,22 @@ Plot the best individual
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
-
 class Animation:
 
-    def __init__(self, data, history):
+    def __init__(self, data, history, fitness, generation):
         self.fig, self.ax = plt.subplots()
         self.x, self.y = zip(*data)
         self.history = history
         self.lines = []
+        self.fitness = fitness
+        self.generation = generation
         # transposing data to reflect real maps
         plt.plot(self.y, self.x, 'ro')
         plt.gca().invert_xaxis()
         # labels
         plt.xlabel("Longitude")
         plt.ylabel("Latitude")
-        plt.title("Best Individual from Every Generation Group")
+        plt.title("Generation=" + str(self.generation[0]) + ", Fitness=" + str(round(self.fitness[0])))
         # initialize line objects
         for index in range(len(self.history[0])-1):
             lobj = self.ax.plot([], [])[0]
@@ -40,6 +41,7 @@ class Animation:
         # return artist for animation
         for lnum, line in enumerate(self.lines):
             line.set_data(y_list[lnum], x_list[lnum])
+        plt.title("Generation=" + str(self.generation[i]) + ", Fitness=" + str(round(abs(self.fitness[i]))))
         return self.lines
 
     def start(self):

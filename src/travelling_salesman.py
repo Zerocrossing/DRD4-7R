@@ -21,7 +21,7 @@ from src.file_utils import parse_file as parse
 # CONSTS
 POP_SIZE = 500
 NUM_PARENTS = 500
-NUM_GENERATIONS = 4000
+NUM_GENERATIONS = 5000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -74,6 +74,8 @@ def the_tsp_problem():
     # print("Best initial member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 20)
     current_time = 0
+    fitness = []
+    generation = []
 
     while terminator.method(tsp.current_generation, current_time):
         # select parents and spawn children
@@ -98,10 +100,12 @@ def the_tsp_problem():
             print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{:5.2f}\t STD DEV: {:.2f}".format(
                 tsp.current_generation, tsp.fitness.mean(), tsp.fitness.max(), std))
             tsp.add_history("best_individual", tsp.population[np.argmax(tsp.fitness.max())])
+            fitness.append(tsp.fitness.max())
+            generation.append(tsp.current_generation)
 
     # If animation is set to true
     if ANIMATE:
-        animator = Animation(actual_data, tsp.history["best_individual"])
+        animator = Animation(actual_data, tsp.history["best_individual"], fitness, generation)
         animator.start()
 
     # finished, print results
