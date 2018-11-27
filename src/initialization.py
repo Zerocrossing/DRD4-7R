@@ -7,6 +7,8 @@ Current methods include:
 import numpy as np
 from src.utils import *
 from src.utils import debug_print as print, set_debug
+from numba import njit, prange
+from src.preprocessing import precalculate_distances
 
 
 class Initialization:
@@ -26,7 +28,9 @@ class Initialization:
             print("Random permutations method selected for initialization")
         elif method_str.lower() == "demo_random":
             self.method = self.DEMO_random
-            print("DEMO_Random method selected for initialization")
+        elif method_str.lower() == "greedy_neighbour":
+            self.method = self.greedy_neighbour
+            print("Greedy Neighbour method selected for initialization")
         else:
             raise Exception("Incorrect method selected for initialization")
 
@@ -51,4 +55,20 @@ class Initialization:
         """
         randomized permutation candidate solutions
         """
-        return np.array([np.random.permutation(np.arange(0, self.tsp.string_length)) for n in np.arange(self.tsp.population_size)],dtype=np.uint16)
+        return np.array(
+            [np.random.permutation(np.arange(0, self.tsp.string_length)) for n in np.arange(self.tsp.population_size)],
+            dtype=np.uint16)
+
+    def greedy_neighbour(self):
+        distances = precalculate_distances(self.tsp.graph)
+        population = self.greedy_jit(self.tsp.population_size, distances, self.tsp.string_length)
+        return population
+
+    @staticmethod
+    @njit(parallel=False, fastmath=True)
+    def greedy_jit(pop_size, distances, str_len):
+        population = np.empty((pop_size, str_len), dtype=np.uint16)
+        for n in prange(pop_size):
+            init = np.random.randint(0, str_len)
+            population[n] = np.argsort(distances[init])
+        return population
