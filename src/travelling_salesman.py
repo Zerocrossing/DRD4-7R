@@ -19,12 +19,13 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 500
-NUM_PARENTS = 500
-NUM_GENERATIONS = 4000
+POP_SIZE = 100
+NUM_PARENTS = 100
+NUM_GENERATIONS = 10000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
-INIT_METHOD = "random_permutations"
+# INIT_METHOD = "random_permutations"
+INIT_METHOD = "greedy_neighbour"
 # SELECT_METHOD = "random"
 SELECT_METHOD = "roulette_wheel"
 # CROSSOVER_METHOD = "cut_and_crossfill"
@@ -37,8 +38,10 @@ EVALUATION_METHOD = "cached_euclidean"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-ANIMATE = True
-
+ANIMATE = False
+SCRAMBLE_THRESHOLD = 10
+SCRAMBLE_METHOD = "swap"
+SCRAMBLE_RATE = 1
 
 def the_tsp_problem():
     # Initialize modules
@@ -47,7 +50,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(middle_data)
+    actual_data = parse(big_data)
 
     # Create Instance
     tsp = TSP(
@@ -64,6 +67,7 @@ def the_tsp_problem():
     evaluator           = Evaluation(tsp, EVALUATION_METHOD)
     survivor_selector   = Survivor_Selection(tsp, SURVIVOR_METHOD)
     terminator          = Termination(NUM_GENERATIONS, TIME_LIMIT, TERMINATOR_METHOD)
+    scrambler           = Mutation(tsp, SCRAMBLE_METHOD)
 
     # Initialize Population and fitness
     initializer.initialize()
@@ -74,6 +78,7 @@ def the_tsp_problem():
     # print("Best initial member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("*" * 20)
     current_time = 0
+    num_scrambles =0
 
     while terminator.method(tsp.current_generation, current_time):
         # select parents and spawn children
@@ -87,12 +92,25 @@ def the_tsp_problem():
         evaluator.evaluate_children()
         # select from parents and children to form new population
         survivor_selector.select()
-        # add history and print debugs every 10%
-        tsp.add_history("mean_fitness",tsp.fitness.mean())
-        tsp.add_history("best_fitness",tsp.fitness.max())
+        # SCRAMBLE
         std = tsp.fitness.std()
+        while std < SCRAMBLE_THRESHOLD or tsp.fitness.max() == tsp.fitness.mean():
+            tsp.mutation_rate = SCRAMBLE_RATE
+            scrambler.mutate_population()
+            # scrambler.mutate_children()
+            evaluator.evaluate(use_mask=True)
+            # evaluator.evaluate_children()
+            std = tsp.fitness.std()
+            num_scrambles +=1
+            tsp.mutation_rate = MUTATION_RATE
+        tsp.add_history("best_fitness",tsp.fitness.max())
         tsp.add_history("std_dev",std)
+        tsp.add_history("mean_fitness",tsp.fitness.mean())
         tsp.current_generation +=1
+
+
+
+        # add history and print debugs every 10%
         if not (tsp.current_generation % (tsp.num_generations // 10)):
             # print("Mutation Rate:",tsp.mutation_rate)
             print("Generation {:<4} Mean Fitness: {:5.2f}\t Best Fitness:{:5.2f}\t STD DEV: {:.2f}".format(
@@ -108,6 +126,7 @@ def the_tsp_problem():
     print("*" * 20)
     # print("Best Member of Population:\n", tsp.population[np.argmax(tsp.fitness)])
     print("Final Mean Fitness: {}\t Best Fitness:{}".format(tsp.fitness.mean(), tsp.fitness.max()))
+    print("Performed {} scrambles".format(num_scrambles))
     print("*" * 10 + "\nFunction Times (in ms):\n")
     time_sum = 0
     for k, v in get_times():

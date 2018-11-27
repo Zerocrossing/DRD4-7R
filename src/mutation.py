@@ -26,7 +26,7 @@ class Mutation:
             self.method = self.flip
         elif method_str.lower() == "scramble":
             self.method = self.scramble
-            print("Substring flip method selected for mutation")
+            print("Scramble method selected for mutation")
         else:
             raise Exception("Incorrect method selected for mutation")
 
