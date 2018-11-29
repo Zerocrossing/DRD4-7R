@@ -19,12 +19,13 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 500
-NUM_PARENTS = 500
-NUM_GENERATIONS = 5000
+POP_SIZE = 50
+NUM_PARENTS = 50
+NUM_GENERATIONS = 10000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
-INIT_METHOD = "random_permutations"
+# INIT_METHOD = "random_permutations"
+INIT_METHOD = "greedy_neighbour"
 # SELECT_METHOD = "random"
 SELECT_METHOD = "roulette_wheel"
 # CROSSOVER_METHOD = "cut_and_crossfill"
@@ -37,7 +38,7 @@ EVALUATION_METHOD = "cached_euclidean"
 SURVIVOR_METHOD = "mu_plus_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
-ANIMATE = True
+ANIMATE = False
 
 
 def the_tsp_problem():
@@ -47,7 +48,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(middle_data)
+    actual_data = parse(big_data)
 
     # Create Instance
     tsp = TSP(
