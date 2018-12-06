@@ -19,13 +19,13 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 50
-NUM_PARENTS = 50
-NUM_GENERATIONS = 10000
+POP_SIZE = 100
+CROSSOVER_RATE = 0.5
+NUM_GENERATIONS = 1000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
-# INIT_METHOD = "random_permutations"
-INIT_METHOD = "greedy_neighbour"
+INIT_METHOD = "random_permutations"
+# INIT_METHOD = "greedy_neighbour"
 # SELECT_METHOD = "random"
 SELECT_METHOD = "roulette_wheel"
 # CROSSOVER_METHOD = "cut_and_crossfill"
@@ -48,13 +48,13 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(big_data)
+    actual_data = parse(middle_data)
 
     # Create Instance
     tsp = TSP(
         graph           = actual_data,
         population_size = POP_SIZE,
-        num_parents     = NUM_PARENTS,
+        crossover_rate  = CROSSOVER_RATE,
         mutation_rate   = MUTATION_RATE,
         num_generations = NUM_GENERATIONS)
     # Initialize modules

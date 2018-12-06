@@ -8,18 +8,21 @@ import matplotlib.pyplot as plt
 
 class TSP:
 
-    def __init__(self, graph, population_size, num_parents, mutation_rate, num_generations=None):
+    def __init__(self, graph, population_size, crossover_rate, mutation_rate, num_generations=None):
         self.graph              = graph
         self.population_size    = population_size
         self.string_length      = graph.shape[0]
-        self.num_parents        = num_parents
+        self.crossover_rate     = crossover_rate
+        self.num_parents        = int(population_size * crossover_rate) if (
+                                  int(population_size * crossover_rate) % 2 == 0) \
+                                  else int(population_size * crossover_rate) - 1
         self.mutation_rate      = mutation_rate
         self.history            = {}
         self.population         = np.zeros(population_size)
         self.fitness            = np.zeros(population_size)
-        self.parent_index       = np.zeros(num_parents)
-        self.children           = np.zeros(num_parents)
-        self.children_fitness   = np.zeros(num_parents)
+        self.parent_index       = np.zeros(self.num_parents)
+        self.children           = np.zeros(self.num_parents)
+        self.children_fitness   = np.zeros(self.num_parents)
         self.mutant_index       = np.array([])
         self.mutant_children_index = np.array([])
         self.best_individual = np.zeros(num_generations)
