@@ -4,7 +4,7 @@ Includes data about the history of the population
 """
 import numpy as np
 import matplotlib.pyplot as plt
-
+from src.utils import debug_print as print
 
 class TSP:
 

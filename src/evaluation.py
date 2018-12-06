@@ -5,7 +5,7 @@ import numpy as np
 from src.utils import *
 from src.preprocessing import precalculate_distances
 from numba import jit, prange
-
+from src.utils import debug_print as print
 
 class Evaluation:
 

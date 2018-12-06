@@ -3,7 +3,7 @@ Selecting a specific number of members from a population to continue to the next
 """
 import numpy as np
 from src.utils import *
-
+from src.utils import debug_print as print
 
 class Survivor_Selection:
 

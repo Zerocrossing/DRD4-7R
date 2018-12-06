@@ -9,6 +9,7 @@ from src.utils import *
 from src.utils import debug_print as print, set_debug
 from numba import njit, prange
 from src.preprocessing import precalculate_distances
+from src.utils import debug_print as print
 
 
 class Initialization:

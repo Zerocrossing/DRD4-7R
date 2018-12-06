@@ -5,6 +5,7 @@ Sexual (binary) reproduction of individuals to create new population candidates
 import numpy as np
 from src.utils import *
 from numba import njit, prange
+from src.utils import debug_print as print
 
 
 class Recombination:

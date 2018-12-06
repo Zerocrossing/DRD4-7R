@@ -5,6 +5,7 @@ Introducing small amounts of randomness to the population
 import numpy as np
 from src.utils import *
 from numba import njit, prange
+from src.utils import debug_print as print
 
 #TODO: Need to modify to accept fitness
 

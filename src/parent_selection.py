@@ -4,6 +4,7 @@ Selecting parents for sexual (non-unary) reproduction
 
 import numpy as np
 from src.utils import *
+from src.utils import debug_print as print
 
 
 class Parent_Selection:
