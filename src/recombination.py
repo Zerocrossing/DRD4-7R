@@ -26,6 +26,9 @@ class Recombination:
         elif method_str.lower() == "order_crossover":
             self.method = order_crossover
             print("Order crossover method selected for recombination")
+        elif method_str.lower() == "pmx":
+            self.method = pmx
+            print("PMX method selected for recombination")
         else:
             raise Exception("Incorrect method selected for recombination")
 
@@ -56,6 +59,8 @@ class Recombination:
         return offspring1, offspring2
 
 
+"""Order Crossover"""
+"""###############"""
 # Parallel adds overhead which can negatively impact performance with low numbers of parents
 # for example: with the medium dataset and 100 parents per generation, parallel=True decreases performance
 #              however with 200 parents it improves it slightly
@@ -68,7 +73,7 @@ def order_crossover(parents):
         start = np.random.randint(1, p1.size // 2)
         slice = np.zeros_like(p1)
         slice[start:start+p1.size//2] = 1
-        slice_bool = slice!=0
+        slice_bool = ~(slice == 0)
         c1 = order_xover_2par(p1, p2, slice_bool)
         c2 = order_xover_2par(p2, p1, slice_bool)
         children[n * 2] = c1
@@ -78,20 +83,73 @@ def order_crossover(parents):
 
 @njit(parallel=False, fastmath=True)
 def order_xover_2par(p1, p2, slice):
+    """
+    Performs order crossover between two parents, whose carry forward
+    slice has already been defined
+
+    :param p1:
+    :param p2:
+    :param slice: A boolean np.array identifying the carry forward slice with `True`
+    :return: The child resulting from the order crossover operation
+    """
     child = np.empty_like(p1)
     child[slice] = p1[slice]
-    p2_diff = in1d(p2,child[slice])
+    p2_diff = ~in1d(p2,child[slice])
     child[~slice] = p2[p2_diff]
     return child
 
 
 @njit(parallel=False, fastmath=True)
-def in1d(array, remove):
+def in1d(array, values):
     out = np.empty(array.shape[0], dtype=np.bool_)
-    remove = set(remove)
+    values = set(values)
     for i in prange(array.shape[0]):
-        if array[i] in remove:
-            out[i] = False
-        else:
-            out[i] = True
+        out[i] = array[i] in values
     return out
+
+"""      PMX      """
+"""###############"""
+@njit(parallel=True, fastmath=True)
+def pmx(parents):
+    children = np.empty_like(parents, dtype=np.uint16)
+    for n in prange(parents.shape[0] // 2):
+        p1 = parents[n * 2]
+        p2 = parents[n * 2 + 1]
+        c1 = pmx_2par(p1, p2)
+        c2 = pmx_2par(p2, p1)
+        children[n * 2] = c1
+        children[n * 2 + 1] = c2
+    return children
+
+@njit(parallel=False, fastmath=True)
+def pmx_2par(p1, p2):
+    """
+    Performs PMX between two parents
+
+    :param p1:
+    :param p2:
+    :return: The child resulting from the PMX crossover operation
+    """
+    child = -np.ones_like(p1) #max unsigned value
+
+    sliceStart = np.random.randint(1, p1.size // 2)
+    sliceEnd = sliceStart + p1.size // 2
+    slice = np.zeros_like(p1, np.bool_) #False np array
+    slice[sliceStart : sliceEnd] = True
+
+    child[slice] = p1[slice]
+    p2SliceDiff = np.zeros_like(p1, np.bool_)
+    p2SliceDiff[slice] = ~in1d(p2[slice], child[slice])
+
+    r_index, = np.where(p2SliceDiff)
+    for n in prange(r_index.size):
+        index = r_index[n]
+        targetIndex, = np.where(p2 == p1[index])[0]
+        while(slice[targetIndex]): #targetIndex is in the slice
+            targetIndex, = np.where(p2 == p1[targetIndex])[0]
+
+        child[targetIndex] = p2[index]
+
+    child[child == -np.uint16(1)] = p2[child == -np.uint16(1)]
+    return child
+
