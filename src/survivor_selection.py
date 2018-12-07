@@ -22,6 +22,9 @@ class Survivor_Selection:
         elif method_str.lower() == "mu_plus_lambda":
             self.method = self.mu_plus_lambda
             print("mu+lambda method selected for survivor selection")
+        elif method_str.lower() == "mu_comma_lambda":
+            self.method = self.mu_comma_lambda
+            print("mu,lambda method selected for survivor selection")
         else:
             raise Exception("Incorrect method selected for survivor selection")
 

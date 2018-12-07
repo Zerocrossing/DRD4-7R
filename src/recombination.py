@@ -10,9 +10,10 @@ from src.utils import debug_print as print
 
 class Recombination:
 
-    def __init__(self, tsp_instance, method_str):
+    def __init__(self, tsp_instance, method_str, evaluator):
         self.tsp = tsp_instance
         self.set_method(method_str)
+        self.dist_cache = evaluator.dist_cache
 
     def set_method(self, method_str):
         """
@@ -26,6 +27,9 @@ class Recombination:
         elif method_str.lower() == "order_crossover":
             self.method = order_crossover
             print("Order crossover method selected for recombination")
+        elif method_str.lower() == "scx":
+            self.method = scx
+            print("Sequential constructive crossover operator selected for recombination")
         elif method_str.lower() == "pmx":
             self.method = pmx
             print("PMX method selected for recombination")
@@ -36,7 +40,7 @@ class Recombination:
         start_timer("recombination")
         selected_parents = self.tsp.parent_index
         parents = self.tsp.population[selected_parents]
-        self.tsp.children = self.method(parents)
+        self.tsp.children = self.method(parents, self.dist_cache)
         add_timer("recombination")
 
     def cut_and_crossfill(self, parent1, parent2):
@@ -64,8 +68,9 @@ class Recombination:
 # Parallel adds overhead which can negatively impact performance with low numbers of parents
 # for example: with the medium dataset and 100 parents per generation, parallel=True decreases performance
 #              however with 200 parents it improves it slightly
+
 @njit(parallel=True, fastmath=True)
-def order_crossover(parents):
+def order_crossover(parents, _):
     children = np.empty_like(parents, dtype=np.uint16)
     for n in prange(parents.shape[0] // 2):
         p1 = parents[n * 2]
@@ -80,8 +85,61 @@ def order_crossover(parents):
         children[n * 2 + 1] = c2
     return children
 
+@njit(parallel=True, fastmath=True)
+def scx(parents, cache):
+    children = np.empty_like(parents, dtype=np.uint16)
+    for n in range(parents.shape[0] // 2):
+        p1 = parents[n * 2]
+        p2 = parents[n * 2 + 1]
+        c1 = scx_xover(p1, p2, cache)
+        c2 = scx_xover(p2, p1, cache)
+        children[n * 2] = c1
+        children[n * 2 + 1] = c2
+    return children
 
 @njit(parallel=False, fastmath=True)
+def scx_xover(p1, p2, cache):
+    child = -np.ones_like(p1)
+    child[0] = p1[0]
+    out_set = set(np.arange(len(child)))
+    out_set.remove(child[0])
+    in_set = {child[0]}
+    index = 0
+
+    while len(out_set) > 0:
+        current_node = child[index]
+        node_1, = p1[(np.where(p1==current_node)[0]+1)%len(p1)]
+
+        if node_1 in in_set:
+            # will take out of set
+            node_1 = out_set.pop()
+            out_set.add(node_1)
+
+        node_2, = p2[(np.where(p2==current_node)[0]+1)%len(p2)]
+
+        if node_2 in in_set:
+            node_2 = out_set.pop()
+            out_set.add(node_2)
+
+        index += 1
+
+        if cache[current_node, node_1] \
+            <= cache[current_node, node_2]:
+            child[index] = node_1
+            in_set.add(node_1)
+            out_set.remove(node_1)
+        else:
+            child[index] = node_2
+            in_set.add(node_2)
+            out_set.remove(node_2)
+
+
+
+    return child
+
+
+
+#@njit(parallel=False, fastmath=True)
 def order_xover_2par(p1, p2, slice):
     """
     Performs order crossover between two parents, whose carry forward
@@ -110,7 +168,7 @@ def in1d(array, values):
 """      PMX      """
 """###############"""
 @njit(parallel=True, fastmath=True)
-def pmx(parents):
+def pmx(parents, _):
     children = np.empty_like(parents, dtype=np.uint16)
     for n in prange(parents.shape[0] // 2):
         p1 = parents[n * 2]

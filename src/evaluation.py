@@ -45,6 +45,9 @@ class Evaluation:
         add_timer("evaluation")
 
 
+    def vertex_distance(self, point1, point2):
+        return self.dist_cache[point1, point2]
+
 @jit(nopython=True, parallel=True, fastmath=True)
 def dist_from_cache(population, cache):
     out = np.zeros(population.shape[0],dtype=np.float64)

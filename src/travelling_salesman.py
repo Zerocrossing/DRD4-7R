@@ -21,7 +21,7 @@ from src.file_utils import parse_file as parse
 # CONSTS
 POP_SIZE = 100
 CROSSOVER_RATE = 0.5
-NUM_GENERATIONS = 1000
+NUM_GENERATIONS = 200
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -29,13 +29,16 @@ INIT_METHOD = "random_permutations"
 # SELECT_METHOD = "random"
 SELECT_METHOD = "roulette_wheel"
 # CROSSOVER_METHOD = "cut_and_crossfill"
-CROSSOVER_METHOD = "order_crossover"
+# CROSSOVER_METHOD = "order_crossover"
+#CROSSOVER_METHOD = "pmx"
+CROSSOVER_METHOD = "scx"
 # MUTATION_METHOD = "swap"
 MUTATION_METHOD = "flip"
 # MUTATION_METHOD = "scramble"
 EVALUATION_METHOD = "cached_euclidean"
 # SURVIVOR_METHOD = "random"
-SURVIVOR_METHOD = "mu_plus_lambda"
+# SURVIVOR_METHOD = "mu_plus_lambda"
+SURVIVOR_METHOD = "mu_comma_lambda"
 TERMINATOR_METHOD = "num_iterations"
 DEBUG = True
 ANIMATE = False
@@ -48,7 +51,7 @@ def the_tsp_problem():
     big_data = "../data/TSP_Canada_4663.txt"
     middle_data = "../data/TSP_Uruguay_734.txt"
     small_data = "../data/TSP_WesternSahara_29.txt"
-    actual_data = parse(middle_data)
+    actual_data = parse(small_data)
 
     # Create Instance
     tsp = TSP(
@@ -60,9 +63,9 @@ def the_tsp_problem():
     # Initialize modules
     initializer         = Initialization(tsp, INIT_METHOD)
     parent_selector     = Parent_Selection(tsp, SELECT_METHOD)
-    recombinator        = Recombination(tsp, CROSSOVER_METHOD)
     mutator             = Mutation(tsp, MUTATION_METHOD)
     evaluator           = Evaluation(tsp, EVALUATION_METHOD)
+    recombinator        = Recombination(tsp, CROSSOVER_METHOD, evaluator)
     survivor_selector   = Survivor_Selection(tsp, SURVIVOR_METHOD)
     terminator          = Termination(NUM_GENERATIONS, TIME_LIMIT, TERMINATOR_METHOD)
 
