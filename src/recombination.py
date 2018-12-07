@@ -104,27 +104,36 @@ def scx_xover(p1, p2, cache):
     out_set = set(np.arange(len(child)))
     out_set.remove(child[0])
     in_set = {child[0]}
-    index = 0
+    # optimization - look up tables instead of using np.where
+    p1_lookup, p2_lookup = np.empty_like(p1), np.empty_like(p2)
 
+    index = 0
+    for x in p1:
+        p1_lookup[x] = p1[(index+1) % len(p1)]
+        index += 1
+
+    # optimization - look up tables instead of using np.where
+    index = 0
+    for x in p2:
+        p2_lookup[x] = p2[(index+1) % len(p2)]
+        index += 1
+
+    index = 0
     while len(out_set) > 0:
         current_node = child[index]
-        node_1, = p1[(np.where(p1==current_node)[0]+1)%len(p1)]
+        node_1 = p1_lookup[current_node]
 
         if node_1 in in_set:
-            # will take out of set
             node_1 = out_set.pop()
             out_set.add(node_1)
 
-        node_2, = p2[(np.where(p2==current_node)[0]+1)%len(p2)]
-
+        node_2 = p2_lookup[current_node]
         if node_2 in in_set:
             node_2 = out_set.pop()
             out_set.add(node_2)
 
         index += 1
-
-        if cache[current_node, node_1] \
-            <= cache[current_node, node_2]:
+        if cache[current_node, node_1] <= cache[current_node, node_2]:
             child[index] = node_1
             in_set.add(node_1)
             out_set.remove(node_1)
@@ -133,13 +142,11 @@ def scx_xover(p1, p2, cache):
             in_set.add(node_2)
             out_set.remove(node_2)
 
-
-
     return child
 
 
 
-#@njit(parallel=False, fastmath=True)
+@njit(parallel=False, fastmath=True)
 def order_xover_2par(p1, p2, slice):
     """
     Performs order crossover between two parents, whose carry forward

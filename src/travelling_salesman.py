@@ -21,7 +21,7 @@ from src.file_utils import parse_file as parse
 # CONSTS
 POP_SIZE = 100
 CROSSOVER_RATE = 0.5
-NUM_GENERATIONS = 200
+NUM_GENERATIONS = 10
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
