@@ -98,13 +98,14 @@ def order_crossover(parents, _):
 @njit(parallel=True, fastmath=True)
 def scx(parents, cache):
     children = np.empty_like(parents, dtype=np.uint16)
-    for n in range(parents.shape[0] // 2):
-        p1 = parents[n * 2]
-        p2 = parents[n * 2 + 1]
+    for n in prange(parents.shape[0] // 2):
+        n2 = n*2
+        p1 = parents[n2]
+        p2 = parents[n2 + 1]
         c1 = scx_xover(p1, p2, cache)
         c2 = scx_xover(p2, p1, cache)
-        children[n * 2] = c1
-        children[n * 2 + 1] = c2
+        children[n2] = c1
+        children[n2+ 1] = c2
     return children
 
 @njit(parallel=False, fastmath=True)
