@@ -117,16 +117,11 @@ def scx_xover(p1, p2, cache):
     # optimization - look up tables instead of using np.where
     p1_lookup, p2_lookup = np.empty_like(p1), np.empty_like(p2)
 
-    index = 0
-    for x in p1:
-        p1_lookup[x] = p1[(index+1) % len(p1)]
-        index += 1
+    for i in prange(p1_lookup.size):
+        p1_lookup[p1[i]] = p1[(i+1) % p1.size]
 
-    # optimization - look up tables instead of using np.where
-    index = 0
-    for x in p2:
-        p2_lookup[x] = p2[(index+1) % len(p2)]
-        index += 1
+    for i in prange(p2_lookup.size):
+        p2_lookup[p2[i]] = p2[(i+1) % p2.size]
 
     index = 0
     while len(out_set) > 0:
