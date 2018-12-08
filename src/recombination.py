@@ -114,7 +114,7 @@ def scx_xover(p1, p2, cache):
     out_set = set(np.arange(len(child)))
     out_set.remove(child[0])
     in_set = {child[0]}
-    # optimization - look up tables instead of using np.where
+    # optimization - successor look up tables instead of using np.where
     p1_lookup, p2_lookup = np.empty_like(p1), np.empty_like(p2)
 
     for i in prange(p1_lookup.size):
