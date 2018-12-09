@@ -19,9 +19,9 @@ from src.utils import debug_print as print
 from src.file_utils import parse_file as parse
 
 # CONSTS
-POP_SIZE = 100
-CROSSOVER_RATE = 0.5
-NUM_GENERATIONS = 200
+POP_SIZE = 200
+MATING_POOL_SIZE = 100
+NUM_GENERATIONS = 10000
 TIME_LIMIT = 100000
 MUTATION_RATE = .3
 INIT_METHOD = "random_permutations"
@@ -57,7 +57,7 @@ def the_tsp_problem():
     tsp = TSP(
         graph           = actual_data,
         population_size = POP_SIZE,
-        crossover_rate  = CROSSOVER_RATE,
+        mating_pool_size= MATING_POOL_SIZE,
         mutation_rate   = MUTATION_RATE,
         num_generations = NUM_GENERATIONS)
     # Initialize modules

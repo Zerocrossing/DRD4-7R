@@ -41,7 +41,10 @@ class Parent_Selection:
     def roulette_wheel(self):
         popSize = self.tsp.population_size
         windowedFitness = self.tsp.fitness - self.tsp.fitness.min()
-        selectionProbability = windowedFitness/windowedFitness.sum() #FPS
+        fitnessSum = windowedFitness.sum()
+        #The selection probability is fitness proportional if the fitnessSum is not 0. Otherwise, all individuals are the
+        #same and we use an equiprobable selection strategy
+        selectionProbability = windowedFitness/fitnessSum if fitnessSum != 0 else np.ones_like(windowedFitness)/popSize
 
         bestIndividual = np.argmax(windowedFitness) #Elitism
         selectedParents = np.random.choice(popSize, size=self.tsp.num_parents-1, replace=True, p=selectionProbability)
