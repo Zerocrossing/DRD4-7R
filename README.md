@@ -6,6 +6,7 @@ By Bishop, Robert; Elsisy, Moustafa; Graves, Caleb; and Nagisetty, Vineel: all a
 ## Table of Contents
 * Introduction
 * Usage
+* More Information
 
 ## Introduction:
 Our research aims to solve the travelling salesman problem using data found [here](http://www.math.uwaterloo.ca/tsp/world/countries.html#WI).  We plan to use an evolutionary computing algorithm to solve this.
@@ -48,3 +49,6 @@ Our research aims to solve the travelling salesman problem using data found [her
  * To reproduce the results shown in the report, please run the notebook file `Report Viz.ipynb` found in the main directory. 
  * To view the animation, run the `travelling_salesman.py` module, setting `ANIMATION = True`
  * To view the debug information in the `travelling_saleslan.py` module, set `DEBUG = True` 
+ 
+ ## More Information: 
+ - More information can be found [here](https://github.com/Zerocrossing/DRD4-7R/blob/master/3201_Explorer_Gene.pdf)
