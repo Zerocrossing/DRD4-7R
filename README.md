@@ -1,7 +1,7 @@
 # DRD4-7R: _The Explorer Gene_
 *A genetic algorithm which attempts to solve the traveling salesman problem.*
 
-By Bishop, Robert; Elsisy, Moustafa; Graves, Caleb; and Nagisetty, Vineel: all affiliated with the Department of Computer Science at Memorial University of Newfoundland
+By Bishop, Robert; Elsisy, Moustafa; Graves, Laura; and Nagisetty, Vineel: all affiliated with the Department of Computer Science at Memorial University of Newfoundland
 
 ## Table of Contents
 * Introduction
